@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
   pthread_t blue_app_thread;
   //  pthread_t http_server_thread;
   
-  struct blue_app_t* blue_info = (blue_app_t*)malloc(sizeof(blue_app_t));
+  blue_app_t* blue_info = (blue_app_t*)malloc(sizeof(blue_app_t));
 
   if ( blue_info == NULL ) { printFatal("Failed to alloc blue_info", -1); }	      
   
@@ -22,8 +22,13 @@ int main(int argc, char* argv[]) {
   if (status < 0) { printFatal("Failed to create blue app thread", -1); }
 
   pthread_detach(blue_app_thread);
+
+  while (1) {
+    
+  }
   
   // cleanup
   free(blue_info);
+  return 0;
   
 }
