@@ -1,6 +1,6 @@
 # MIDI Controller Box BOM
 
-- Pi/Dragonboard
+- Pi
 - rotary encoder
 - 3D printed jog wheel
 - potentiometer slider
