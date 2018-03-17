@@ -38,4 +38,4 @@ void printFatal(char* message, int id) {
   exit(id);
 }
 
-#endif COMMON_UTIL_H_
+#endif // COMMON_UTIL_H_
