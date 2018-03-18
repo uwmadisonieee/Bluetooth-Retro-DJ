@@ -59,8 +59,10 @@
 - **PIN 8** - SPI Clk for LED and LCD
 - **PIN 14** - SPI MOSI for LED and LCD
 - **PIN 24** - SPI Clock Select pin to control Mux for LED and LCD
+	- **LOW** turns on LCD
+	- **HIGH** turns on LED
 - **PIN 26** - Reset Pin for LCD 
-- **PIN 30** - Data/Control pin for LCD
+- **PIN 31** - Data/Control pin for LCD
 - **PIN 32** - Rotary Encoder A
 - **PIN 34** - Rotary Encoder B
 - **PIN 33** - Push Button
