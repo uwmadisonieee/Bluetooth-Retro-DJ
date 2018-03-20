@@ -1,45 +1,7 @@
-/* standard headers */
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-
-/* mraa header */
-#include <mraa/spi.h>
-#include <mraa/gpio.h>
-
-/* SPI declaration */
-#define SPI_BUS 0
-
-#define CS 24
-#define DC 31
-#define HRESET 26
-
-#define SWRESET 0x01 //software reset
-#define SLPOUT 0x11 //sleep out
-#define DISPON 0x29 //display on
-#define CASET 0x2A //column address set
-#define RASET 0x2B //row address set
-#define RAMWR 0x2C //RAM write
-#define MADCTL 0x36//#axis control
-#define COLMOD 0x3A //color mode
-#define MADCTL_MY  0x80
-#define MADCTL_MX  0x40
-#define MADCTL_MV  0x20
-#define MADCTL_ML  0x10
-#define MADCTL_RGB 0x00
-
-#define S_WIDTH 160
-#define S_HEIGHT 128
-#define S_COLOR 3 // 24 bits for RGB666 which is default color mode
-
-/* SPI frequency in Hz */
-#define SPI_FREQ 50000000
+#include "lcd_tft.h"
 
 static mraa_spi_context spi;
 static mraa_gpio_context cs, dc, hreset;
-
 
 volatile sig_atomic_t flag = 1;
 
@@ -55,7 +17,7 @@ sig_handler(int signum)
 
 void set_addr_window(int x0, int x1, int y0, int y1) {
   mraa_gpio_write(dc, 0);
-  mraa_spi_write(spi, RASET);
+  mraa_spi_write(spi, TFT_RASET);
   mraa_gpio_write(dc, 1);
  
   mraa_spi_write(spi, x0 >> 8);
@@ -64,7 +26,7 @@ void set_addr_window(int x0, int x1, int y0, int y1) {
   mraa_spi_write(spi, x1 & 0xFF); 
 
   mraa_gpio_write(dc, 0);
-  mraa_spi_write(spi, CASET);
+  mraa_spi_write(spi, TFT_CASET);
   mraa_gpio_write(dc, 1);
  
   mraa_spi_write(spi, y0 >> 8);
@@ -80,37 +42,23 @@ int main(int argc, char** argv)
     
     int i, j;
 
-    FILE* f_gif;
-    uint8_t *frame_buffer_0;
-    uint8_t *frame_buffer_1;
-    int frame_size = S_WIDTH * S_HEIGHT * S_COLOR * sizeof(uint8_t);
-
-    char red[3] = {0xff, 0, 0};
-    char blue[3] = {0, 0, 0xff};
-
-    frame_buffer_0 = (uint8_t*)malloc(frame_size);
-    if (frame_buffer_0 == NULL) {
-      puts("Can't malloc frame_buffer");
-      return -1;
-    }
-    frame_buffer_1 = (uint8_t*)malloc(frame_size);
-    if (frame_buffer_1 == NULL) {
+    int gif_length;
+    uint8_t *frame_buffers;
+    int frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
+   
+    frame_buffers = (uint8_t*)malloc(frame_size * TFT_MAX_FB);
+    if (frame_buffers == NULL) {
       puts("Can't malloc frame_buffer");
       return -1;
     }
 
-    f_gif = fopen("test.rgb", "rb");
-    if (f_gif) {
-      i = fread(frame_buffer_0, frame_size, 1, f_gif);
-    } else {
-      puts("FILE ERROR");
+
+    gif_length = GIF2RGB(argv[1], frame_buffers, TFT_MAX_FB, frame_size);
+    if (gif_length <= 0) {
+      printf("Gif_length failed: %d\n", gif_length);
+      return -1;
     }
-    // set FB_0 to all blue and FB_1 to all red
-    for (i = 0; i < frame_size; i += S_COLOR) {
-    //  memcpy(frame_buffer_0 + i, blue, 3);
-      memcpy(frame_buffer_1 + i, red, 3);
-    }
-    
+		       
     /* initialize mraa for the platform (not needed most of the times) */
     mraa_init();
 
@@ -154,10 +102,6 @@ int main(int argc, char** argv)
     }
 
     mraa_gpio_write(cs, 0);
-
-    mraa_gpio_write(hreset, 1);
-    mraa_gpio_write(hreset, 0);
-    mraa_gpio_write(hreset, 1);
     
     //! [Interesting]
     /* initialize SPI bus */
@@ -188,44 +132,38 @@ int main(int argc, char** argv)
 
     //mraa_spi_write_buf(spi, pixel_test_8, 16);
 
+    mraa_gpio_write(hreset, 1);
+    mraa_gpio_write(hreset, 0);
+    mraa_gpio_write(hreset, 1);
+
     mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, SWRESET);
+    mraa_spi_write(spi, TFT_SWRESET);
     usleep(500000);
-    mraa_spi_write(spi, SLPOUT);
+    mraa_spi_write(spi, TFT_SLPOUT);
     usleep(500000);
-    mraa_spi_write(spi, DISPON);
+    mraa_spi_write(spi, TFT_DISPON);
     usleep(200000);
-
+    
+    
     mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, MADCTL);     
+    mraa_spi_write(spi, TFT_MADCTL);     
     mraa_gpio_write(dc, 1);
-    mraa_spi_write(spi, MADCTL_MY | MADCTL_MV | MADCTL_RGB);
+    mraa_spi_write(spi, TFT_MADCTL_MY | TFT_MADCTL_MV | TFT_MADCTL_RGB);
  
-    //    set_addr_window(0, S_WIDTH, 0, S_HEIGHT);
-    set_addr_window(0, S_HEIGHT, 0, S_WIDTH); 
+    //    set_addr_window(0, TFT_WIDTH, 0, TFT_HEIGHT);
+    set_addr_window(0, TFT_HEIGHT, 0, TFT_WIDTH); 
     mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, RAMWR);     
+    mraa_spi_write(spi, TFT_RAMWR);     
     mraa_gpio_write(dc, 1);
-    //	while(1) {
 
-    for (i = 0; i < frame_size; i += 1024) {
-      mraa_spi_write_buf(spi, frame_buffer_1 + i, 1024);
-      usleep(10000);
+
+    for (i = 0; i < gif_length; i++) {
+      for (j = 0; j < frame_size; j += 2048) {
+	mraa_spi_write_buf(spi, frame_buffers + (i * frame_size) + j, 2048);
+      }
+      usleep(80000); // delay between frame
     }
 
-    for (i = 0; i < frame_size; i += 2048) {
-      mraa_spi_write_buf(spi, frame_buffer_0 + i, 2048);
-    }
-
-    //    set_addr_window(0, S_WIDTH, 0, S_HEIGHT); 
-    //    mraa_gpio_write(dc, 0);
-    //    mraa_spi_write(spi, RAMWR);     
-    //    mraa_gpio_write(dc, 1);
-
-    //}
-    
-    // fill green
-    
     /* stop spi */
     mraa_spi_stop(spi);
 
