@@ -1,0 +1,21 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: btretro_pcb.PcbDoc   3/21/2018  8:35:52 AM
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : btretro_pcb.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      0.381mm (15mil)                                           Round             20        PTH        129.01mm (5.08inch)
+T2      0.406mm (16mil)                                           Round             2         PTH        2.75mm (0.11inch)
+T3      0.508mm (20mil)                                           Round             36        PTH        331.68mm (13.06inch)
+T4      0.711mm (28mil)                                           Round             12        PTH        117.87mm (4.64inch)
+T5      1mm (39mil)                                               Round             17        PTH        153.48mm (6.04inch)
+T6      0.9mm (35mil)                                             Round             1         NPTH       0.00mm (0.00inch)
+T7      1.3mm (51mil)                                             Round             3         NPTH       77.37mm (3.05inch)
+T8      3mm (118mil)                                              Round             6         NPTH       332.86mm (13.10inch)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              97
+
+Total Processing Time (hh:mm:ss) : 00:00:01

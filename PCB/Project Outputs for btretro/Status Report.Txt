@@ -1,9 +1,12 @@
-Output: Bill of Materials
-Type  : BOM
-From  : Variant [[No Variations]] of Project [btretro.PrjPcb]
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [btretro.PrjPcb]
+   Generated File[btretro_pcb.TXT]
+   Generated File[btretro_pcb.LDP]
+   Generated File[btretro_pcb.DRR]
 
 
-Files Generated   : 0
+Files Generated   : 3
 Documents Printed : 0
 
-Finished Output Generation At 9:43:31 AM On 3/19/2018
+Finished Output Generation At 8:35:53 AM On 3/21/2018
