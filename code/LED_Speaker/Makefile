@@ -1,9 +1,23 @@
 CC = gcc
-CFLAGS = -Wall -Werror
-BLUEAPP = ../common/blueApp.c -lbluetooth
+CFLAGS = -Wall -Werror -c
+SHARED = -lpthread -lasound -lbluetooth -lmraa -lgif
+OBJ_AUDIO = audio/playback.o
+OBJ_DISPLAY = display/lcd_tft.o display/gif.o display/led.o
 
-gif:
-	gcc gif.c lcd_tft.c -lgif -lmraa -o test
+main: audio display
+	$(CC) $(OBJ_AUDIO) $(OBJ_DISPLAY) main.c $(SHARED) -o LED_Speaker
 
-blue:
-	$(CC) $(BLUEAPP) main.c -o LED_Base
+audio: $(OBJ_AUDIO)
+
+audio/%.o: audio/%.c
+	$(CC) $(CFLAGS) -lasound -o $@ $<
+
+display: $(OBJ_DISPLAY)
+
+display/%.0: display/%.c
+	$(CC) $(CFLAGS) -lmraa -lgif -o $@ $<
+
+clean:
+	rm audio/*.o
+	rm display/*.o
+	rm LED_Speaker

@@ -1,3 +1,6 @@
+#ifndef DISPLAY_LCD_TFT_H_
+#define DISPLAY_LCD_TFT_H_
+
 /* standard headers */
 #include <signal.h>
 #include <stdlib.h>
@@ -18,7 +21,7 @@
 #define DC 31
 #define HRESET 26
 
-#define TFT_MAX_FB 30
+#define TFT_MAX_FB 90
 
 #define TFT_SWRESET 0x01 //software reset
 #define TFT_SLPOUT 0x11 //sleep out
@@ -40,4 +43,7 @@
 
 /* SPI frequency in Hz */
 #define SPI_FREQ 50000000
- 
+
+int LCD_Start(int index);
+
+#endif

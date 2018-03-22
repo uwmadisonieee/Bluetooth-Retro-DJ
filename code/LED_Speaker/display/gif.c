@@ -70,7 +70,7 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
     /* Scan the content of the GIF file and load the image(s) in: */
     do {
       if (DGifGetRecordType(GifFile, &RecordType) == GIF_ERROR) {
-	printf("ERROR: %s\n",GifFile->Error);
+	printf("ERROR: %d\n",GifFile->Error);
 	return FreeScreenBuffer(ScreenBuffer);
       }
 	
@@ -78,7 +78,7 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
       case IMAGE_DESC_RECORD_TYPE:
 	printf("IMAGE_DESC_RECORD_TYPE\n");
 	if (DGifGetImageDesc(GifFile) == GIF_ERROR) {
-	  printf("ERROR: %s\n",GifFile->Error);
+	  printf("ERROR: %d\n",GifFile->Error);
 	  return FreeScreenBuffer(ScreenBuffer);
 	}
 	Row = GifFile->Image.Top; /* Image Position relative to Screen. */
@@ -97,7 +97,7 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
 	    for (j = Row + InterlacedOffset[i]; j < Row + Height; j += InterlacedJumps[i]) {
 	      printf("\b\b\b\b%-4d", Count++);
 	      if (DGifGetLine(GifFile, &ScreenBuffer[j][Col], Width) == GIF_ERROR) {
-		printf("ERROR: %s\n",GifFile->Error);
+		printf("ERROR: %d\n",GifFile->Error);
 		return FreeScreenBuffer(ScreenBuffer);
 	      }
 	    }
@@ -106,7 +106,7 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
 	  for (i = 0; i < Height; i++) {
 	    printf("\b\b\b\b%-4d", i);
 	    if (DGifGetLine(GifFile, &ScreenBuffer[Row++][Col], Width) == GIF_ERROR) {
-	      printf("ERROR: %s\n",GifFile->Error);
+	      printf("ERROR: %d\n",GifFile->Error);
 	      return FreeScreenBuffer(ScreenBuffer);
 	    }
 	  }
@@ -144,12 +144,12 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
 	//printf("EXTENSION TYPE ------------------\n");
 	/* Skip any extension blocks in file: */
 	if (DGifGetExtension(GifFile, &ExtCode, &Extension) == GIF_ERROR) {
-	  printf("ERROR: %s\n",GifFile->Error);
+	  printf("ERROR: %d\n",GifFile->Error);
 	  return FreeScreenBuffer(ScreenBuffer);
 	}
 	while (Extension != NULL) {
 	  if (DGifGetExtensionNext(GifFile, &Extension) == GIF_ERROR) {
-	    printf("ERROR: %s\n",GifFile->Error);
+	    printf("ERROR: %d\n",GifFile->Error);
 	    return FreeScreenBuffer(ScreenBuffer);
 	  }
 	}
@@ -166,7 +166,7 @@ int GIF2RGB(char *FileName, uint8_t *Buffer, int MaxFrameLen, int FrameSize)
 
 
     if (DGifCloseFile(GifFile, &Error) == GIF_ERROR) {
-      printf("ERROR: %s\n",GifFile->Error);
+      printf("ERROR: %d\n",GifFile->Error);
       return (-2);
     }
 

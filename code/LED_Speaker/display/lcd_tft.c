@@ -3,19 +3,7 @@
 static mraa_spi_context spi;
 static mraa_gpio_context cs, dc, hreset;
 
-volatile sig_atomic_t flag = 1;
-
-void
-sig_handler(int signum)
-{
-    if (signum == SIGINT) {
-        fprintf(stdout, "Exiting...\n");
-        flag = 0;
-    }
-}
-
-
-void set_addr_window(int x0, int x1, int y0, int y1) {
+static void set_addr_window(int x0, int x1, int y0, int y1) {
   mraa_gpio_write(dc, 0);
   mraa_spi_write(spi, TFT_RASET);
   mraa_gpio_write(dc, 1);
@@ -36,9 +24,9 @@ void set_addr_window(int x0, int x1, int y0, int y1) {
     
 }
 
-int main(int argc, char** argv)
-{
-    mraa_result_t status = MRAA_SUCCESS;
+int LCD_Start(int index) {
+
+  mraa_result_t status = MRAA_SUCCESS;
     
     int i, j;
 
@@ -53,7 +41,7 @@ int main(int argc, char** argv)
     }
 
 
-    gif_length = GIF2RGB(argv[1], frame_buffers, TFT_MAX_FB, frame_size);
+    gif_length = GIF2RGB("gifs/1.gif", frame_buffers, TFT_MAX_FB, frame_size);
     if (gif_length <= 0) {
       printf("Gif_length failed: %d\n", gif_length);
       return -1;
