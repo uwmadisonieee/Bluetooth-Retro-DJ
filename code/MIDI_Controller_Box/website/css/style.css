@@ -1,2 +1,19 @@
-body {
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+#screenPairing { 
+	width: 100%;
+	height: 100%;
+	background: blue;
+	text-align: center;
+}
+
+#pairingText{
+	font-size: 60px;
+	color: white;
+	padding-top: 160px;
 }
