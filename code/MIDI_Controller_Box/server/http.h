@@ -3,7 +3,7 @@
 
 #include "util.h"
 
-#define WEBSITE_FOLDER "../website"
+#define WEBSITE_FOLDER "./website"
 
 #define BAD_REQ "400 BAD REQUEST"
 #define GOOD_REQ "200 OK"

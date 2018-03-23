@@ -423,5 +423,5 @@ void callbackHandler(char* message) {
 
   long int type = strtol(message, &err, 10);
 
-  g_server->onSocketMessage(type, (const char*)value+1);
+  g_server->onSocketMessage(type, value+1);
 }

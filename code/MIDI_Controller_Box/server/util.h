@@ -96,7 +96,7 @@ typedef struct {
 typedef struct server_t {
   int                  port;
   ws_list*             list;
-  callbackIntConstStr  onSocketMessage;
+  callbackIntStr       onSocketMessage;
 } server_t;
 
 //////////////////////////////////////////

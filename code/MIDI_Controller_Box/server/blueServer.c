@@ -8,7 +8,7 @@ static struct sockaddr_rc server = {0};
 
 void BlueMessage(int type, char* value) {
 
-  char send_buffer[1024];
+  char send_buffer[BLUE_MAX_BUFFER];
   sprintf(send_buffer, "%d:%s", type, value);
   write(client_fd, send_buffer, strlen(send_buffer));
   
@@ -17,7 +17,9 @@ void BlueMessage(int type, char* value) {
 static void* BlueDaemon() {
 
   int status;
-
+  char buffer[BLUE_MAX_BUFFER];
+  memset(buffer, 0, sizeof(buffer));
+  
   client_fd = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
 
   server.rc_family = AF_BLUETOOTH;
@@ -27,9 +29,28 @@ static void* BlueDaemon() {
   status = connect(client_fd, (struct sockaddr*)&server, sizeof(server));
   if (status < 0) {
     fprintf(stderr, "Error with bluetooth connection\n");
+  } else {
+    fprintf(stdout, "Connected!\n");
   }
 
-  BlueMessage(0, "Please work first take first try");
+  // init data
+  status = read(client_fd, buffer, sizeof(buffer));
+  bluetooth_on_init(buffer);
+  memset(buffer, 0, sizeof(buffer));
+
+  while(1) {
+    status = read(client_fd, buffer, sizeof(buffer));
+    if (status > 0) {
+      const char s[2] = ":";
+
+      // 100% assuming data in in key,value form
+      int type = atoi(strtok(buffer, s));
+      char* value = strtok(NULL, s);
+
+      bluetooth_on_data(type,value);
+      memset(buffer, 0, sizeof(buffer));
+    }
+  }
   
   return NULL;
 }
