@@ -1,5 +1,5 @@
 # Exe name
-MCB
+MIDI_Controller
 
 # -*- mode: gitignore; -*-
 *~
@@ -39,7 +39,6 @@ dist/
 flycheck_*.el
 
 # server auth directory
-/server/
 
 # projectiles files
 .projectile
