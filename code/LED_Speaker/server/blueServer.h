@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <stdint.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -20,5 +21,7 @@ pthread_t server_thread;
 callbackIntStr server_on_data;
 
 void ServerStart( void );
+
+void ServerMessage(int type, char* value);
 
 #endif

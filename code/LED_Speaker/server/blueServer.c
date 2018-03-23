@@ -15,6 +15,36 @@ static void printFatal(char* message, int id) {
   exit(id);
 }
 
+static void sendSongData() {
+  char buffer[BLUE_MAX_BUFFER] = "";
+  char path[32] = "./audio/tracks/";
+  char temp[256];
+  
+  DIR *dir;
+  struct dirent *ent;
+  if ((dir = opendir (path)) != NULL) {
+    /* print all the files and directories within directory */
+    while ((ent = readdir (dir)) != NULL) {
+      
+      if (!strcmp(ent->d_name, ".") || !strcmp (ent->d_name, "..")) { continue; }
+      memset(temp, 0, sizeof(temp));
+      strncpy(temp, ent->d_name, strlen(ent->d_name) - 4); // remove .wav
+      for (char* p = temp; (p = strchr(p, '_')); ++p) { // replace _ for spaces
+	*p = ' ';
+      }
+      strcat(buffer, ";");
+      strcat(buffer, temp);
+    }
+    closedir(dir);
+  } else {
+    fprintf(stderr, "Can't oppen directory!");
+    exit(-2);
+  }
+
+  write(client_fd, buffer, strlen(buffer));
+  
+}
+
 static void* serverDaemon() {
 
   struct sockaddr_rc server = {0};
@@ -42,6 +72,9 @@ static void* serverDaemon() {
   memset(buffer, 0, sizeof(buffer));
   client_fd = accept(socket_fd, (struct sockaddr*)&client, &client_size);
 
+  // init data
+  sendSongData();
+  
   while(1) {
 
     status = read(client_fd, buffer, sizeof(buffer));
@@ -57,12 +90,20 @@ static void* serverDaemon() {
 
     // get ready for next connection
     memset(buffer, 0, sizeof(buffer));
-    client_fd = accept(socket_fd, (struct sockaddr*)&client, &client_size);
   }
 
   return NULL;
   
 }
+
+void ServerMessage(int type, char* value) {
+
+  char send_buffer[BLUE_MAX_BUFFER];
+  sprintf(send_buffer, "%d:%s", type, value);
+  write(client_fd, send_buffer, strlen(send_buffer));
+
+}
+
 
 void ServerStart() {
   int status;
