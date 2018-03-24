@@ -10,6 +10,7 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/rfcomm.h>
 #include <pthread.h>
+#include "../audio/tracks.h"
 
 #define BLUE_MAX_BUFFER 4096
 

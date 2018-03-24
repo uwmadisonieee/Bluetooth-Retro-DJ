@@ -17,10 +17,12 @@ Once you are connected you can now both SSH and SCP into the board to transfer f
 
 ## How to add a new song
 
-First some restriction about the audio file
+First some restriction about the audio file since I was too lazy to hard error check everything :)
 
 - Must be a 16 bit WAV file
+  - Must end with a `.wav` extension
 - Must be a **Mono** file, no stero, will sound bad if you try
+- File name must be under 128 characters
 - Contain only letters and numbers in name (this is to be safe, didn't do much error checking on this part at al)
 - All underscores in name get replaced with spaces when displayed on DJ Controller
   - `Hello_World.wav` gets displayed as `Hello World`

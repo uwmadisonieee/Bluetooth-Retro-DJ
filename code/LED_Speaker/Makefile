@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Werror -c
-SHARED = -lpthread -lasound -lbluetooth -lmraa -lgif
+SHARED = -lpthread -lasound -lbluetooth -lmraa -lgif -lm
 OBJ_SERVER = server/blueServer.o
-OBJ_AUDIO = audio/playback.o
+OBJ_AUDIO = audio/playback.o audio/tracks.o
 OBJ_DISPLAY = display/lcd_tft.o display/gif.o display/led.o
 
 main: server audio display
@@ -16,7 +16,7 @@ server/%.o: server/%.c
 audio: $(OBJ_AUDIO)
 
 audio/%.o: audio/%.c
-	$(CC) $(CFLAGS) -lasound -o $@ $<
+	$(CC) $(CFLAGS) -lasound -lm -o $@ $<
 
 display: $(OBJ_DISPLAY)
 

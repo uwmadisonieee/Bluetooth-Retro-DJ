@@ -2,11 +2,8 @@
 
 static int socket_fd;
 static int client_fd;
-
-/*static int printError(char* message, int return_val) {
-  fprintf(stderr,"%s\n", message);
-  return return_val;
-  }*/
+static char* send_buffer;
+static int connected = 0;
 
 static void printFatal(char* message, int id) {
   fprintf(stderr,"\n*************************************\n");
@@ -16,33 +13,10 @@ static void printFatal(char* message, int id) {
 }
 
 static void sendSongData() {
-  char buffer[BLUE_MAX_BUFFER] = "";
-  char path[32] = "./audio/tracks/";
-  char temp[256];
-  
-  DIR *dir;
-  struct dirent *ent;
-  if ((dir = opendir (path)) != NULL) {
-    /* print all the files and directories within directory */
-    while ((ent = readdir (dir)) != NULL) {
-      
-      if (!strcmp(ent->d_name, ".") || !strcmp (ent->d_name, "..")) { continue; }
-      memset(temp, 0, sizeof(temp));
-      strncpy(temp, ent->d_name, strlen(ent->d_name) - 4); // remove .wav
-      for (char* p = temp; (p = strchr(p, '_')); ++p) { // replace _ for spaces
-	*p = ' ';
-      }
-      strcat(buffer, ";");
-      strcat(buffer, temp);
-    }
-    closedir(dir);
-  } else {
-    fprintf(stderr, "Can't oppen directory!");
-    exit(-2);
-  }
-
-  write(client_fd, buffer, strlen(buffer));
-  
+  // Sure hope max buffer is less then string lol #ThugLife
+  memset(send_buffer, 0, BLUE_MAX_BUFFER);
+  TracksAsString(send_buffer);
+  write(client_fd, send_buffer, strlen(send_buffer));
 }
 
 static void* serverDaemon() {
@@ -74,6 +48,8 @@ static void* serverDaemon() {
 
   // init data
   sendSongData();
+
+  connected = 1;
   
   while(1) {
 
@@ -97,17 +73,18 @@ static void* serverDaemon() {
 }
 
 void ServerMessage(int type, char* value) {
-
-  char send_buffer[BLUE_MAX_BUFFER];
+  if (connected == 0) { return; }
   sprintf(send_buffer, "%d:%s", type, value);
   write(client_fd, send_buffer, strlen(send_buffer));
-
 }
 
 
 void ServerStart() {
   int status;
 
+  send_buffer = (char*) malloc(BLUE_MAX_BUFFER);
+  if (send_buffer == NULL) { printFatal("ERROR: Allocate send_buffer", 0); }
+  
   status = pthread_create(&server_thread, NULL, serverDaemon, NULL);
 
   if (status < 0) {
