@@ -7,7 +7,11 @@ function broadcast(key, ...values) {
     webSocket.send(key + ":" + values.join(":"));
 };
 
+function wsOnOpen() {
+    broadcast(0,0); // tells server we are ready to connect to bluetooth
+}
 
+var songList = [];
 // decides what do when message arrives
 function wsOnMessage(event) {
 // console.log(event);
@@ -15,11 +19,13 @@ function wsOnMessage(event) {
   var message = JSON.parse(event.data);
 
   switch(parseInt(message.type)) {
-  case 0:
-    console.log("init");
+  case 0: // add to song list
+    songList.push(message.value);
+      if (screenMode == 0) { screenGoto(1); }
+      updateSonglist(message.value);
     break;
-  case 1: // song list
-  
+  case 1:
+      console.log(message.value);
     break;
   case 2:
     break;
@@ -32,10 +38,6 @@ function wsOnMessage(event) {
   default:
 	  warn("WebSocket", "No case for data: %0", message);
   }
-}
-
-function wsAllReadyToStart() {
-  broadcast(0, 0);
 }
 
 /////////////////////////////////////
