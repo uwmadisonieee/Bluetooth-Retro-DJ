@@ -1,6 +1,5 @@
-test
 # Exe name
-LED_Base
+LED_Speaker
 
 # -*- mode: gitignore; -*-
 *~
@@ -38,9 +37,6 @@ dist/
 
 # Flycheck
 flycheck_*.el
-
-# server auth directory
-/server/
 
 # projectiles files
 .projectile

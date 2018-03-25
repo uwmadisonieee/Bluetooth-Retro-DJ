@@ -45,5 +45,4 @@
 #define SPI_FREQ 50000000
 
 int LCD_Start(int index);
-
 #endif
