@@ -42,7 +42,7 @@
 #define TFT_COLOR 3 // 24 bits for RGB666 which is default color mode
 
 /* SPI frequency in Hz */
-#define SPI_FREQ 50000000
+#define SPI_FREQ 32000000
 
 int LCD_Start(int index);
 #endif

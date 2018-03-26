@@ -7,33 +7,32 @@ static void set_addr_window(int x0, int x1, int y0, int y1) {
   mraa_gpio_write(dc, 0);
   mraa_spi_write(spi, TFT_RASET);
   mraa_gpio_write(dc, 1);
- 
+
   mraa_spi_write(spi, x0 >> 8);
   mraa_spi_write(spi, x0 & 0xFF);
   mraa_spi_write(spi, x1 >> 8);
-  mraa_spi_write(spi, x1 & 0xFF); 
+  mraa_spi_write(spi, x1 & 0xFF);
 
   mraa_gpio_write(dc, 0);
   mraa_spi_write(spi, TFT_CASET);
   mraa_gpio_write(dc, 1);
- 
+
   mraa_spi_write(spi, y0 >> 8);
   mraa_spi_write(spi, y0 & 0xFF);
   mraa_spi_write(spi, y1 >> 8);
-  mraa_spi_write(spi, y1 & 0xFF); 
-    
+  mraa_spi_write(spi, y1 & 0xFF);
 }
 
 int LCD_Start(int index) {
 
   mraa_result_t status = MRAA_SUCCESS;
-    
+
     int i, j;
 
     int gif_length;
     uint8_t *frame_buffers;
     int frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
-   
+
     frame_buffers = (uint8_t*)malloc(frame_size * TFT_MAX_FB);
     if (frame_buffers == NULL) {
       puts("Can't malloc frame_buffer");
@@ -46,7 +45,7 @@ int LCD_Start(int index) {
       printf("Gif_length failed: %d\n", gif_length);
       return -1;
     }
-		       
+
     /* initialize mraa for the platform (not needed most of the times) */
     mraa_init();
 
@@ -90,7 +89,7 @@ int LCD_Start(int index) {
     }
 
     mraa_gpio_write(cs, 0);
-    
+
     //! [Interesting]
     /* initialize SPI bus */
     spi = mraa_spi_init(SPI_BUS);
@@ -131,17 +130,17 @@ int LCD_Start(int index) {
     usleep(500000);
     mraa_spi_write(spi, TFT_DISPON);
     usleep(200000);
-    
-    
+
+
     mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, TFT_MADCTL);     
+    mraa_spi_write(spi, TFT_MADCTL);
     mraa_gpio_write(dc, 1);
     mraa_spi_write(spi, TFT_MADCTL_MY | TFT_MADCTL_MV | TFT_MADCTL_RGB);
- 
+
     //    set_addr_window(0, TFT_WIDTH, 0, TFT_HEIGHT);
-    set_addr_window(0, TFT_HEIGHT, 0, TFT_WIDTH); 
+    set_addr_window(0, TFT_HEIGHT, 0, TFT_WIDTH);
     mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, TFT_RAMWR);     
+    mraa_spi_write(spi, TFT_RAMWR);
     mraa_gpio_write(dc, 1);
 
 
