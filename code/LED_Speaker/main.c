@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   // audio needs to be setup before bluetooth
   PlaybackSetup();
   fprintf(stdout, "Playback Setup\n");
-	  
+
   // Bluetooth Activate!
   ServerStart();
   fprintf(stdout, "Server Started\n");

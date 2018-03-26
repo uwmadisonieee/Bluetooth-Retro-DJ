@@ -7,21 +7,20 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <dirent.h>
 
 /* mraa header */
-#include <mraa/spi.h>
+#include "spi.h"
 #include <mraa/gpio.h>
 
 #include "gif.h"
 
-/* SPI declaration */
-#define SPI_BUS 0
+#define TFT_GIF_PATH "./display/gifs/"
 
-#define CS 24
-#define DC 31
-#define HRESET 26
+#define TFT_DC 31
+#define TFT_HRESET 26
 
-#define TFT_MAX_FB 90
+#define TFT_MAX_GIFS 15
 
 #define TFT_SWRESET 0x01 //software reset
 #define TFT_SLPOUT 0x11 //sleep out
@@ -41,8 +40,6 @@
 #define TFT_HEIGHT 128
 #define TFT_COLOR 3 // 24 bits for RGB666 which is default color mode
 
-/* SPI frequency in Hz */
-#define SPI_FREQ 32000000
+void lcd_setup(void);
 
-int LCD_Start(int index);
 #endif
