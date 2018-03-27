@@ -70,7 +70,7 @@ int gif_2_rgb(char *FileName, uint8_t *Buffer, int FrameSize)
 
     memcpy(ScreenBuffer[i], ScreenBuffer[0], Size);
   }
-
+  //  puts("1");
   /* Scan the content of the GIF file and load the image(s) in: */
   do {
     if (DGifGetRecordType(GifFile, &RecordType) == GIF_ERROR) {
@@ -88,10 +88,11 @@ int gif_2_rgb(char *FileName, uint8_t *Buffer, int FrameSize)
       Col = GifFile->Image.Left;
       Width = GifFile->Image.Width;
       Height = GifFile->Image.Height;
-      //	fprintf(stderr,"\n: Image %d at (%d, %d) [%dx%d]:     ", ++ImageNum, Col, Row, Width, Height);
+      ImageNum++;
+      //fprintf(stderr,"\n: Image %d at (%d, %d) [%dx%d]:     ", ++ImageNum, Col, Row, Width, Height);
       if (GifFile->Image.Left + GifFile->Image.Width > GifFile->SWidth ||
 	  GifFile->Image.Top + GifFile->Image.Height > GifFile->SHeight) {
-	fprintf(stderr, "ERROR Image %d is not confined to screen dimension, aborted.\n",ImageNum);
+	//fprintf(stderr, "ERROR Image %d is not confined to screen dimension, aborted.\n",ImageNum);
 	return FreeScreenBuffer(ScreenBuffer);
       }
       if (GifFile->Image.Interlace) {
