@@ -3,6 +3,7 @@
 
 #include <mraa/spi.h>
 #include <mraa/gpio.h>
+#include <stdlib.h>
 
 #define SPI_BUS 0
 #define SPI_FREQ 32000000 // 32 MHz

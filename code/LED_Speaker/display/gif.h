@@ -16,7 +16,7 @@
 // Pass in file and buffer to store gif
 // assume gif dimensions match buffer
 // returns number of frames gif needed on success
-int gif_2_reb(char *FileName, uint8_t *Buffer, int FrameSize);
+int gif_2_rgb(char *FileName, uint8_t *Buffer, int FrameSize);
 
 int gif_frame_count(char *FileName);
 

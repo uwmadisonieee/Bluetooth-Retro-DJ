@@ -5,11 +5,10 @@ static uint8_t* led_start_frame;
 static uint8_t* led_end_frame;
 
 static led_frame led_f_red = {0xff, 0xff, 0x00, 0x00};
-static led_frame led_f_green = {0xff, 0xff, 0x00, 0x00};
-static led_frame led_f_blue = {0xff, 0xff, 0x00, 0x00};
+//static led_frame led_f_green = {0xff, 0xff, 0x00, 0x00};
+//static led_frame led_f_blue = {0xff, 0xff, 0x00, 0x00};
 
 void led_setup() {
-  int i;
 
   led_buffer = (uint8_t*)malloc(sizeof(led_frame) * LED_COUNT);
   if (led_buffer == NULL) {
@@ -71,7 +70,7 @@ void led_set_side_brightness(uint8_t side, uint8_t brightness) {
   int i;
   if (side > 3) { side = 3; }
   if (brightness > LED_MAX_BRIGHTNESS) { brightness = LED_MAX_BRIGHTNESS; }
-  uint8_ start = 0xE0 | (brightness & 0x1F);
+  uint8_t start = 0xE0 | (brightness & 0x1F);
 
   if (side == 0) {
     memcpy(led_buffer + (4 * 0), &start, 1);
@@ -97,7 +96,7 @@ void led_set_all(led_frame frame) {
 void led_set_all_brightness(uint8_t brightness) {
   int i;
   if (brightness > LED_MAX_BRIGHTNESS) { brightness = LED_MAX_BRIGHTNESS; }
-  uint8_ start = 0xE0 | (brightness & 0x1F);
+  uint8_t start = 0xE0 | (brightness & 0x1F);
 
    for (i = 0; i < LED_COUNT; i++) {
     memcpy(led_buffer + (4 * i), &start, 1);

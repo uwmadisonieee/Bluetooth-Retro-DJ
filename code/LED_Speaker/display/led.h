@@ -4,6 +4,8 @@
 #include "spi.h"
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define LED_COUNT 20
 #define LED_MAX_BRIGHTNESS 31

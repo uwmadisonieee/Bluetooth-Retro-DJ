@@ -32,7 +32,9 @@ void HardwareSetup() {
 }
 
 int main(int argc, char* argv[]) {
-
+  char debug[256];
+  int debugI;
+  double debugF;
   // need to give data callback
   server_on_data = BlueDataCallback;
 
@@ -45,10 +47,12 @@ int main(int argc, char* argv[]) {
   fprintf(stdout, "Playback Setup\n");
 
   // Bluetooth Activate!
-  ServerStart();
-  fprintf(stdout, "Server Started\n");
+  //  ServerStart();
+  //fprintf(stdout, "Server Started\n");
 
   while (1) {
+    scanf("%f", &debugF);
+    PlaybackSetGain(debugF);
   }
 
   PlaybackCleanup();

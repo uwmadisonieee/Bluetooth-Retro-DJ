@@ -28,9 +28,6 @@ static void set_addr_window(int x0, int x1, int y0, int y1) {
 void lcd_setup() {
 
   mraa_result_t status = MRAA_SUCCESS;
-  int i, j, res;
-  int gif_length;
-  uint8_t *frame_buffers;
   int frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
 
   DIR *dir;
@@ -104,13 +101,13 @@ void lcd_setup() {
       }
 
       // memory to hold it
-      frame_buffers[gif_count] = (uint8_t*)malloc(frame_size * gif_length[gif_count]);
-      if (frame_buffers[gif_count] == NULL) {
+      *(frame_buffers + gif_count) = (uint8_t*)malloc(frame_size * gif_length[gif_count]);
+      if (*(frame_buffers + gif_count) == NULL) {
 	fprintf(stderr, "shit, allocate failed\n"); exit(-1);
       }
 
       // conversion
-      gif_2_rgb(ent->d_name, frame_buffers[gif_count], frame_size);
+      gif_2_rgb(ent->d_name, *(frame_buffers + gif_count), frame_size);
 
       gif_count++;
 

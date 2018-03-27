@@ -1,5 +1,7 @@
+
 #include "spi.h"
 
+static mraa_result_t status = MRAA_SUCCESS;
 void spi_cleanup() {
   mraa_result_print(status);
 
@@ -13,7 +15,6 @@ void spi_cleanup() {
 }
 
 void spi_setup() {
-  mraa_result_t status = MRAA_SUCCESS;
 
   /* initialize mraa for the platform (not needed most of the times) */
   mraa_init();
@@ -23,7 +24,7 @@ void spi_setup() {
   if (cs_c == NULL) {
     fprintf(stderr, "Failed to initialize GPIO %d\n", SPI_CS);
     mraa_deinit();
-    return EXIT_FAILURE;
+    exit(-1);
   }
 
   /* set GPIO to output */
@@ -39,7 +40,7 @@ void spi_setup() {
   if (spi_c == NULL) {
     fprintf(stderr, "Failed to initialize SPI\n");
     mraa_deinit();
-    return EXIT_FAILURE;
+    exit(-1);
   }
 
   /* set SPI frequency */
