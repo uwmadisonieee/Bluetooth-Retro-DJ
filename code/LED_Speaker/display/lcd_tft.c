@@ -1,174 +1,183 @@
 #include "lcd_tft.h"
 
-static mraa_spi_context spi;
-static mraa_gpio_context cs, dc, hreset;
+int lcd_speed;
+int lcd_play_next;
 
-static void set_addr_window(int x0, int x1, int y0, int y1) {
-  mraa_gpio_write(dc, 0);
-  mraa_spi_write(spi, TFT_RASET);
-  mraa_gpio_write(dc, 1);
- 
-  mraa_spi_write(spi, x0 >> 8);
-  mraa_spi_write(spi, x0 & 0xFF);
-  mraa_spi_write(spi, x1 >> 8);
-  mraa_spi_write(spi, x1 & 0xFF); 
+static mraa_gpio_context dc_c, hreset_c;
+static uint8_t** frame_buffers;
+static uint8_t gif_length[TFT_MAX_GIFS];
+static uint8_t gif_count = 0;
+static uint32_t frame_size;
+static uint8_t* miso_buffer;
 
-  mraa_gpio_write(dc, 0);
-  mraa_spi_write(spi, TFT_CASET);
-  mraa_gpio_write(dc, 1);
- 
-  mraa_spi_write(spi, y0 >> 8);
-  mraa_spi_write(spi, y0 & 0xFF);
-  mraa_spi_write(spi, y1 >> 8);
-  mraa_spi_write(spi, y1 & 0xFF); 
-    
+static uint8_t cur_gif = 0;
+static uint8_t cur_frame = 0;
+static uint32_t swap_count = 0;
+
+
+
+static void SetAddrWindow(int x0, int x1, int y0, int y1) {
+  mraa_gpio_write(dc_c, 0);
+  mraa_spi_write(spi_c, TFT_RASET);
+  mraa_gpio_write(dc_c, 1);
+
+  mraa_spi_write(spi_c, x0 >> 8);
+  mraa_spi_write(spi_c, x0 & 0xFF);
+  mraa_spi_write(spi_c, x1 >> 8);
+  mraa_spi_write(spi_c, x1 & 0xFF);
+
+  mraa_gpio_write(dc_c, 0);
+  mraa_spi_write(spi_c, TFT_CASET);
+  mraa_gpio_write(dc_c, 1);
+
+  mraa_spi_write(spi_c, y0 >> 8);
+  mraa_spi_write(spi_c, y0 & 0xFF);
+  mraa_spi_write(spi_c, y1 >> 8);
+  mraa_spi_write(spi_c, y1 & 0xFF);
 }
 
-int LCD_Start(int index) {
+void LCDLoop() {
+  int i;
+
+  if (lcd_play_next == 1 || (swap_count >= TFT_FRAME_TIL_SWAP && cur_frame >= gif_length[cur_gif])) {
+    // Time to switch gifs
+    cur_gif++;
+    if (cur_gif >= gif_count) { cur_gif = 0; }
+
+    cur_frame = 0;
+    swap_count = 0;
+    lcd_play_next = 0;
+  }
+
+  while(cur_frame < gif_length[cur_gif]) {
+
+    // a single frame #PointerGameStrong
+    for (i = 0; i < frame_size; i += 2048) {
+      miso_buffer = mraa_spi_write_buf(spi_c, (*(frame_buffers + cur_gif)) + (cur_frame * frame_size) + i, 2048);
+
+      // "The Pointer return has to be free'd by the caller" ~MRAA Doc
+      if (miso_buffer != NULL) { free(miso_buffer); } 
+    }
+
+    swap_count++;
+    cur_frame++;
+
+    // TODO time swap to LED to range how much delay to use
+    if (spi_lcd_or_led == 1) {
+      return;
+    }
+
+    usleep(lcd_speed); // delay between frame
+  }
+
+  // reset gif and let function reset above
+  if (swap_count < TFT_FRAME_TIL_SWAP) {
+    cur_frame = 0;
+  }
+
+}
+
+void LCDSetup() {
 
   mraa_result_t status = MRAA_SUCCESS;
-    
-    int i, j;
+  frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
 
-    int gif_length;
-    uint8_t *frame_buffers;
-    int frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
-   
-    frame_buffers = (uint8_t*)malloc(frame_size * TFT_MAX_FB);
-    if (frame_buffers == NULL) {
-      puts("Can't malloc frame_buffer");
-      return -1;
-    }
+  DIR *dir;
+  struct dirent *ent;
+  char full_path[256];
 
+  lcd_speed = 50000;
+  lcd_play_next = 0;
 
-    gif_length = GIF2RGB("gifs/1.gif", frame_buffers, TFT_MAX_FB, frame_size);
-    if (gif_length <= 0) {
-      printf("Gif_length failed: %d\n", gif_length);
-      return -1;
-    }
-		       
-    /* initialize mraa for the platform (not needed most of the times) */
-    mraa_init();
+  /* initialize GPIO pin */
+  dc_c = mraa_gpio_init(TFT_DC);
+  if (dc_c == NULL) {
+    fprintf(stderr, "Failed to initialize GPIO %d\n", TFT_DC);
+    mraa_deinit();
+    exit(-1);
+  }
 
-    /* initialize GPIO pin */
-    cs = mraa_gpio_init(CS);
-    if (cs == NULL) {
-      fprintf(stderr, "Failed to initialize GPIO %d\n", CS);
-      mraa_deinit();
-      return EXIT_FAILURE;
-    }
+  hreset_c = mraa_gpio_init(TFT_HRESET);
+  if (dc_c == NULL) {
+    fprintf(stderr, "Failed to initialize GPIO %d\n", TFT_HRESET);
+    mraa_deinit();
+    exit(-1);
+  }
 
-    /* initialize GPIO pin */
-    dc = mraa_gpio_init(DC);
-    if (dc == NULL) {
-      fprintf(stderr, "Failed to initialize GPIO %d\n", DC);
-      mraa_deinit();
-      return EXIT_FAILURE;
-    }
+  /* set GPIO to output */
+  status = mraa_gpio_dir(dc_c, MRAA_GPIO_OUT);
+  if (status != MRAA_SUCCESS) {
+    SPICleanup();
+  }
 
-    hreset = mraa_gpio_init(HRESET);
-    if (dc == NULL) {
-      fprintf(stderr, "Failed to initialize GPIO %d\n", HRESET);
-      mraa_deinit();
-      return EXIT_FAILURE;
-    }
-    /* set GPIO to output */
-    status = mraa_gpio_dir(cs, MRAA_GPIO_OUT);
-    if (status != MRAA_SUCCESS) {
-      goto err_exit;
-    }
+  status = mraa_gpio_dir(hreset_c, MRAA_GPIO_OUT);
+  if (status != MRAA_SUCCESS) {
+    SPICleanup();
+  }
 
-    /* set GPIO to output */
-    status = mraa_gpio_dir(dc, MRAA_GPIO_OUT);
-    if (status != MRAA_SUCCESS) {
-      goto err_exit;
-    }
+  // Reseting screen
+  mraa_gpio_write(hreset_c, 1);
+  mraa_gpio_write(hreset_c, 0);
+  mraa_gpio_write(hreset_c, 1);
+  mraa_gpio_write(dc_c, 0);
+  mraa_spi_write(spi_c, TFT_SLPOUT);
+  usleep(500000);
+  mraa_spi_write(spi_c, TFT_DISPON);
+  usleep(200000);
 
-    status = mraa_gpio_dir(hreset, MRAA_GPIO_OUT);
-    if (status != MRAA_SUCCESS) {
-      goto err_exit;
-    }
+  // turn screen to long width
+  mraa_gpio_write(dc_c, 0);
+  mraa_spi_write(spi_c, TFT_MADCTL);
+  mraa_gpio_write(dc_c, 1);
+  mraa_spi_write(spi_c, TFT_MADCTL_MY | TFT_MADCTL_MV | TFT_MADCTL_RGB);
 
-    mraa_gpio_write(cs, 0);
-    
-    //! [Interesting]
-    /* initialize SPI bus */
-    spi = mraa_spi_init(SPI_BUS);
-    if (spi == NULL) {
-        fprintf(stderr, "Failed to initialize SPI\n");
-        mraa_deinit();
-        return EXIT_FAILURE;
-    }
+  // sets screen to be full screen
+  SetAddrWindow(0, TFT_HEIGHT, 0, TFT_WIDTH);
+  mraa_gpio_write(dc_c, 0);
+  mraa_spi_write(spi_c, TFT_RAMWR);
+  mraa_gpio_write(dc_c, 1);
+  
+  // time to allocate some gif memory
+  frame_buffers = (uint8_t**)malloc(sizeof(uint8_t*) * TFT_MAX_GIFS);
+  if (frame_buffers == NULL) {
+    puts("Can't malloc frame_buffer"); exit(-1);
+  }
 
-    /* set SPI frequency */
-    status = mraa_spi_frequency(spi, SPI_FREQ);
-    if (status != MRAA_SUCCESS)
-        goto err_exit;
+  gif_count = 0;
+  if ((dir = opendir (TFT_GIF_PATH)) != NULL) {
+    while ((ent = readdir (dir)) != NULL) {
 
-    /* set big endian mode */
-    status = mraa_spi_lsbmode(spi, 0);
-    if (status != MRAA_SUCCESS) {
-        goto err_exit;
-    }
+      // ignore ./ and ../ inode
+      if (!strcmp(ent->d_name, ".") || !strcmp (ent->d_name, "..")) { continue; }
 
-    /* MAX7219/21 chip needs the data in word size */
-    status = mraa_spi_bit_per_word(spi, 8);
-    if (status != MRAA_SUCCESS) {
-        fprintf(stdout, "Failed to set SPI Device to 16Bit mode\n");
-        goto err_exit;
-    }
+      // creat path
+      memset(full_path, 0, sizeof(full_path));
+      strcpy(full_path,TFT_GIF_PATH);
+      strcat(full_path, ent->d_name);
 
-    //mraa_spi_write_buf(spi, pixel_test_8, 16);
-
-    mraa_gpio_write(hreset, 1);
-    mraa_gpio_write(hreset, 0);
-    mraa_gpio_write(hreset, 1);
-
-    mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, TFT_SWRESET);
-    usleep(500000);
-    mraa_spi_write(spi, TFT_SLPOUT);
-    usleep(500000);
-    mraa_spi_write(spi, TFT_DISPON);
-    usleep(200000);
-    
-    
-    mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, TFT_MADCTL);     
-    mraa_gpio_write(dc, 1);
-    mraa_spi_write(spi, TFT_MADCTL_MY | TFT_MADCTL_MV | TFT_MADCTL_RGB);
- 
-    //    set_addr_window(0, TFT_WIDTH, 0, TFT_HEIGHT);
-    set_addr_window(0, TFT_HEIGHT, 0, TFT_WIDTH); 
-    mraa_gpio_write(dc, 0);
-    mraa_spi_write(spi, TFT_RAMWR);     
-    mraa_gpio_write(dc, 1);
-
-
-    for (i = 0; i < gif_length; i++) {
-      for (j = 0; j < frame_size; j += 2048) {
-	mraa_spi_write_buf(spi, frame_buffers + (i * frame_size) + j, 2048);
+      // get number of frames in gif
+      gif_length[gif_count] = gif_frame_count(full_path);
+      if (gif_length[gif_count] <= 0) {
+	fprintf(stderr, "Gif reading failed: %d\n", gif_length[gif_count]); exit(-1);
       }
-      usleep(80000); // delay between frame
+
+      // memory to hold it
+      *(frame_buffers + gif_count) = (uint8_t*)malloc(frame_size * gif_length[gif_count]);
+      if (*(frame_buffers + gif_count) == NULL) {
+	fprintf(stderr, "shit, allocate failed\n"); exit(-1);
+      }
+
+      // conversion
+      gif_2_rgb(full_path, *(frame_buffers + gif_count), frame_size);
+
+      gif_count++;
+
+      if (gif_count >= TFT_MAX_GIFS) { break; }
     }
+    closedir(dir);
+  } else {
+    fprintf(stderr, "ERROR: Can't oppen directory!");
+    exit(-2);
+  }
 
-    /* stop spi */
-    mraa_spi_stop(spi);
-
-    //! [Interesting]
-    /* deinitialize mraa for the platform (not needed most of the times) */
-    mraa_deinit();
-
-    return EXIT_SUCCESS;
-
-err_exit:
-    mraa_result_print(status);
-
-    /* stop spi */
-    mraa_spi_stop(spi);
-
-    /* deinitialize mraa for the platform (not needed most of the times) */
-    mraa_deinit();
-
-    return EXIT_FAILURE;
 }
