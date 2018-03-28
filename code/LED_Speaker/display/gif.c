@@ -30,7 +30,7 @@ int gif_2_rgb(char *FileName, uint8_t *Buffer, int FrameSize)
   uint8_t *BufferP;
 
   if ((GifFile = DGifOpenFileName(FileName, &Error)) == NULL) {
-    fprintf(stderr, "Can't oppen File\n");
+    fprintf(stderr, "Can't oppen File: %s\n", FileName);
     return -1;
   }
 
@@ -252,6 +252,7 @@ int gif_frame_count(char *FileName) {
       Col = GifFile->Image.Left;
       Width = GifFile->Image.Width;
       Height = GifFile->Image.Height;
+      ImageNum++;
       //	fprintf(stderr,"\n: Image %d at (%d, %d) [%dx%d]:     ", ++ImageNum, Col, Row, Width, Height);
       if (GifFile->Image.Left + GifFile->Image.Width > GifFile->SWidth ||
 	  GifFile->Image.Top + GifFile->Image.Height > GifFile->SHeight) {
@@ -321,5 +322,6 @@ int gif_frame_count(char *FileName) {
     return (-2);
   }
 
+  fprintf(stdout, "\tFrames in %s - [%d]\n", FileName, ImageNum);
   return ImageNum;
 }

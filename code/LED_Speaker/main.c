@@ -39,7 +39,7 @@ void BlueDataCallback( int type, char* value) {
   case 9:
     // between 1 - 30
     lcd_speed = (atoi(value) * 3000) + 10000;
-    // get gif speed between 10000 and 100000 
+    // get gif speed between 10000 and 100000
     break;
   default:
     fprintf(stderr, "Not a valid type [%d]\n", type);
@@ -57,7 +57,7 @@ void* SPILoop(void* na) {
       mraa_gpio_write(cs_c, 1); // toggle led
 
       LEDSend();
-      
+
       mraa_gpio_write(cs_c, 0); // go back to lcd
       spi_lcd_or_led = 0;
     }
@@ -83,8 +83,8 @@ int main(int argc, char* argv[]) {
   fprintf(stdout, "LED Setup\n");
 
   // Send Init LED from setup
-  mraa_gpio_write(cs_c, 1);  
-  LEDSend();  
+  mraa_gpio_write(cs_c, 1);
+  LEDSend();
   mraa_gpio_write(cs_c, 0);
   spi_lcd_or_led = 0;
 
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
   pthread_create(&spi_thread, NULL, SPILoop, NULL);
 
   pthread_create(&playback_thread, NULL, TrackPlay, NULL);
-  
+
   // Bluetooth Activate!
   //ServerStart();
   //  fprintf(stdout, "Server Started\n");
