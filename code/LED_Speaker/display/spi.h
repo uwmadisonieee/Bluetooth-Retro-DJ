@@ -10,10 +10,12 @@
 
 #define SPI_CS 24 // using pin 24 (HIGH == LED, LOW == LCD)
 
+uint8_t spi_lcd_or_led;
+
 mraa_spi_context spi_c;
 mraa_gpio_context cs_c;
 
-void spi_cleanup(void);
-void spi_setup(void);
+void SPICleanup(void);
+void SPISetup(void);
 
 #endif

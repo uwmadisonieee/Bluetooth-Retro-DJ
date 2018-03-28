@@ -8,7 +8,7 @@ static led_frame led_f_red = {0xff, 0xff, 0x00, 0x00};
 //static led_frame led_f_green = {0xff, 0xff, 0x00, 0x00};
 //static led_frame led_f_blue = {0xff, 0xff, 0x00, 0x00};
 
-void led_setup() {
+void LEDSetup() {
 
   led_buffer = (uint8_t*)malloc(sizeof(led_frame) * LED_COUNT);
   if (led_buffer == NULL) {
@@ -22,25 +22,21 @@ void led_setup() {
   if (led_end_frame == NULL) {
     fprintf(stderr, "failed to allocated LED\n"); exit(-1);
   }
-
+  
   memset(led_start_frame, 0, 4);
   memset(led_end_frame, 0, 4);
-
+  
   // init set to red
-  led_set_all(led_f_red);
-
-  led_send();
+  LEDSetAll(led_f_red);
 }
 
-void led_send() {
-  mraa_gpio_write(cs_c, 1); // need to start somewhere
-
+void LEDSend() {
   mraa_spi_write_buf(spi_c, led_start_frame, 4);
   mraa_spi_write_buf(spi_c, led_buffer, sizeof(led_frame) * LED_COUNT);
   mraa_spi_write_buf(spi_c, led_end_frame, 4);
 }
 
-led_frame led_make_frame(uint8_t brightness, uint8_t red, uint8_t green, uint8_t blue) {
+led_frame LEDMakeFrame(uint8_t brightness, uint8_t red, uint8_t green, uint8_t blue) {
   if (brightness > LED_MAX_BRIGHTNESS) { brightness = LED_MAX_BRIGHTNESS; }
 
   uint8_t start = 0xE0 | (brightness & 0x1F);
@@ -48,7 +44,7 @@ led_frame led_make_frame(uint8_t brightness, uint8_t red, uint8_t green, uint8_t
   return ret;
 }
 
-void led_set_side(uint8_t side, led_frame frame) {
+void LEDSetSide(uint8_t side, led_frame frame) {
   int i;
   if (side > 3) { side = 3; }
 
@@ -66,7 +62,7 @@ void led_set_side(uint8_t side, led_frame frame) {
   }
 }
 
-void led_set_side_brightness(uint8_t side, uint8_t brightness) {
+void LEDSetSideBrightness(uint8_t side, uint8_t brightness) {
   int i;
   if (side > 3) { side = 3; }
   if (brightness > LED_MAX_BRIGHTNESS) { brightness = LED_MAX_BRIGHTNESS; }
@@ -86,14 +82,14 @@ void led_set_side_brightness(uint8_t side, uint8_t brightness) {
   }
 }
 
-void led_set_all(led_frame frame) {
+void LEDSetAll(led_frame frame) {
   int i;
   for (i = 0; i < LED_COUNT; i++) {
     memcpy(led_buffer + (4 * i), &frame, 4);
   }
 }
 
-void led_set_all_brightness(uint8_t brightness) {
+void LEDSetAllBrightness(uint8_t brightness) {
   int i;
   if (brightness > LED_MAX_BRIGHTNESS) { brightness = LED_MAX_BRIGHTNESS; }
   uint8_t start = 0xE0 | (brightness & 0x1F);
@@ -103,7 +99,7 @@ void led_set_all_brightness(uint8_t brightness) {
   }
 }
 
-void led_set_frame(uint8_t led, led_frame frame) {
+void LEDSetFrame(uint8_t led, led_frame frame) {
   if (led >= LED_COUNT) { led = LED_COUNT - 1; }
 
   memcpy(led_buffer + (4 * led), &frame, 4);

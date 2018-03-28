@@ -1,11 +1,19 @@
 #include "lcd_tft.h"
 
+int lcd_speed;
+int lcd_play_next;
+
 static mraa_gpio_context dc_c, hreset_c;
 static uint8_t** frame_buffers;
 static uint8_t gif_length[TFT_MAX_GIFS];
-static int gif_count = 0;
+static uint8_t gif_count = 0;
+static uint32_t frame_size; 
 
-static void set_addr_window(int x0, int x1, int y0, int y1) {
+static uint8_t cur_gif = 0;
+static uint8_t cur_frame = 0;
+static uint32_t swap_count = 0;
+
+static void SetAddrWindow(int x0, int x1, int y0, int y1) {
   mraa_gpio_write(dc_c, 0);
   mraa_spi_write(spi_c, TFT_RASET);
   mraa_gpio_write(dc_c, 1);
@@ -25,14 +33,55 @@ static void set_addr_window(int x0, int x1, int y0, int y1) {
   mraa_spi_write(spi_c, y1 & 0xFF);
 }
 
-void lcd_setup() {
+void LCDLoop() {
+  int i;
+  
+  if (lcd_play_next == 1 || (swap_count >= TFT_FRAME_TIL_SWAP && cur_frame >= gif_length[cur_gif])) {
+    // Time to switch gifs
+    cur_gif++;
+    if (cur_gif >= gif_count) { cur_gif = 0; }
+
+    cur_frame = 0;
+    swap_count = 0;
+    lcd_play_next = 0;
+  }
+  
+  while(cur_frame < gif_length[cur_gif]) {
+
+    // a single frame #PointerGameStrong
+    for (i = 0; i < frame_size; i += 2048) {
+      mraa_spi_write_buf(spi_c, (*(frame_buffers + cur_gif)) + (cur_frame * frame_size) + i, 2048);
+    }
+
+    swap_count++;
+    cur_frame++;
+
+    // TODO time swap to LED to range how much delay to use
+    if (spi_lcd_or_led == 1) {
+      return;
+    }
+    
+    usleep(lcd_speed); // delay between frame
+  }
+
+  // reset gif and let function reset above
+  if (swap_count < TFT_FRAME_TIL_SWAP) {
+    cur_frame = 0;
+  }
+  
+}
+
+void LCDSetup() {
 
   mraa_result_t status = MRAA_SUCCESS;
-  int frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
+  frame_size = TFT_WIDTH * TFT_HEIGHT * TFT_COLOR * sizeof(uint8_t);
 
   DIR *dir;
   struct dirent *ent;
 
+  lcd_speed = 50000;
+  lcd_play_next = 0;
+  
   /* initialize GPIO pin */
   dc_c = mraa_gpio_init(TFT_DC);
   if (dc_c == NULL) {
@@ -51,12 +100,12 @@ void lcd_setup() {
   /* set GPIO to output */
   status = mraa_gpio_dir(dc_c, MRAA_GPIO_OUT);
   if (status != MRAA_SUCCESS) {
-    spi_cleanup();
+    SPICleanup();
   }
 
   status = mraa_gpio_dir(hreset_c, MRAA_GPIO_OUT);
   if (status != MRAA_SUCCESS) {
-    spi_cleanup();
+    SPICleanup();
   }
 
   // Reseting screen
@@ -76,7 +125,7 @@ void lcd_setup() {
   mraa_spi_write(spi_c, TFT_MADCTL_MY | TFT_MADCTL_MV | TFT_MADCTL_RGB);
 
   // sets screen to be full screen
-  set_addr_window(0, TFT_HEIGHT, 0, TFT_WIDTH);
+  SetAddrWindow(0, TFT_HEIGHT, 0, TFT_WIDTH);
   mraa_gpio_write(dc_c, 0);
   mraa_spi_write(spi_c, TFT_RAMWR);
   mraa_gpio_write(dc_c, 1);
@@ -120,13 +169,3 @@ void lcd_setup() {
   }
 
 }
-
-
-/*
-  for (i = 0; i < gif_length; i++) {
-    for (j = 0; j < frame_size; j += 2048) {
-      mraa_spi_write_buf(spi_c, frame_buffers + (i * frame_size) + j, 2048);
-    }
-    usleep(80000); // delay between frame
-  }
-*/

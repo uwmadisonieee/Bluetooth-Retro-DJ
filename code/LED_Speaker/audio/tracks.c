@@ -1,6 +1,7 @@
 #include "tracks.h"
 
 static char track_list[TRACKS_MAX_COUNT][TRACKS_NAME_SIZE];
+const double TRACKS_SEC_PER_FRAME = 0.085;
 
 void TracksReadFiles() {
   tracks_count = 0;
@@ -18,7 +19,7 @@ void TracksReadFiles() {
       if (strlen(ent->d_name) > TRACKS_NAME_SIZE) { continue; }
 
       strcpy(track_list[tracks_count], ent->d_name);
-      
+      printf("Track [%d]: %s\n", tracks_count, ent->d_name);
       tracks_count++;
 
       if (tracks_count >= TRACKS_MAX_COUNT) { break; }

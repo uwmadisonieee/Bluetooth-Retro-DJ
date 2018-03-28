@@ -9,15 +9,15 @@
 #include <pthread.h>
 
 #include "tracks.h"
-
-pthread_t playback_thread;
+int play_test;
 
 uint8_t playback_new_track;
 uint8_t playback_pause;
 
 int playback_cur_track;
 
-void PlaybackSetGain(double new_gain);
+pthread_t playback_thread;
+void* TrackPlay(void* na);
 
 void PlaybackSetup(void);
 void TrackSeek(int amount);

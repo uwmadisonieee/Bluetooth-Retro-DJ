@@ -10,13 +10,14 @@ static snd_pcm_uframes_t frames;
 static snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
 
 static void* buffer;
+static void* buffer_mix;
 static double* buffer_d;
 static uint32_t buffer_size;
 
 static void**    track_buffer;
 static uint32_t* track_size;
 
-static double gain = 1.0f;
+double playback_gain;
 
 static void WriteBufS16(double *in, void *out, int s)
 {
@@ -35,9 +36,35 @@ static void ReadBufS16(void *in, double *out, int s)
   }
 }
 
-void PlaybackSetGain(double new_gain) {
-  gain = pow(10.0, new_gain / 20.0);
-};
+static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
+  int i;
+  int32_t a, b;
+  int32_t m;
+
+  for (i = 0; i < length; i++) {
+    a = (int32_t) *(((int16_t*)a_buf) + i);
+    b = (int32_t) *(((int16_t*)b_buf) + i);
+    // Make both samples unsigned (0..65535)
+    a += 32768;
+    b += 32768;
+
+    // Pick the equation
+    if ((a < 32768) || (b < 32768)) {
+      // Viktor's first equation when both sources are "quiet"
+      // (i.e. less than middle of the dynamic range)
+      m = a * b / 32768;
+    } else {
+      // Viktor's second equation when one or both sources are loud
+      m = 2 * (a + b) - (a * b) / 32768 - 65536;
+    }
+
+    // Output is unsigned (0..65536) so convert back to signed (-32768..32767)
+    if (m == 65536) m = 65535;
+    m -= 32768;
+
+    *(((int16_t*)m_buf) + i) = m;
+  }
+}
 
 static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
   FILE* fp;
@@ -73,15 +100,15 @@ static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
 static int current_frame = 0;
 
 static void FramePlay(void* track_buf) {
-  int j;
+  //int j;
   
   // gets frame to a double buffer
   ReadBufS16(track_buf, buffer_d, buffer_size);
 
   // apply effects to buffer
-  for (j = 0; j < frames; j++) {
-    *(buffer_d + j) *= gain;
-  }
+  //  for (j = 0; j < frames; j++) {
+  //    *(buffer_d + j) *= playback_gain;
+  //}
 
   // wrtie back to a int16_t buffer
   WriteBufS16(buffer_d, buffer, buffer_size);
@@ -135,17 +162,29 @@ void TrackSeek(int amount) {
   }
 }
 
-static void* TrackPlay(void* na) {
-
+void* TrackPlay(void* na) {
+  play_test = 0;
+  int mixb = 0;
   // endless loop on track playing thread
   while (1) {
 
-    for(current_frame = 0; current_frame < ( *(track_size + playback_cur_track) - 1); current_frame++) {
+    for(current_frame = 0; current_frame < ( *(track_size + playback_cur_track) - 1); current_frame++, mixb++) {
       if (playback_pause == 1) {
 	current_frame--; // dirty fix
 	usleep(100000);
       } else {
-	FramePlay(*(track_buffer + playback_cur_track) + (buffer_size * current_frame));
+	if (play_test == 1) {
+	  play_test = 0;
+	  mixb =0;
+	}
+	TrackMix(
+		 *(track_buffer + 2) + (buffer_size * current_frame),
+		 *(track_buffer + 3) + (buffer_size * mixb),
+		 buffer_mix,
+		 buffer_size);
+	FramePlay(buffer_mix);
+
+	//FramePlay(*(track_buffer + playback_cur_track) + (buffer_size * current_frame));
       }
 
       if (playback_new_track == 1) {
@@ -279,12 +318,16 @@ void PlaybackSetup() {
   buffer = (void*) malloc(buffer_size);
   if (buffer == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
 
+  buffer_mix = (void*) malloc(buffer_size);
+  if (buffer_mix == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
+
   buffer_d = (double*) malloc(buffer_size);
   if (buffer_d == NULL){fprintf(stderr,"ERROR: malloc buffer_d\n");}
 
   playback_new_track = 0;
-  playback_pause = 0; // start paused
+  playback_pause = 1; // start paused
   playback_cur_track = 0;
+  playback_gain = 1.0f;
 
   TracksReadFiles();
   fprintf(stdout, "\tTrack files read in\n");
@@ -292,6 +335,5 @@ void PlaybackSetup() {
   TrackSetup();
   fprintf(stdout, "\tTrack setup\n");
 
-  sleep(1);
-  pthread_create(&playback_thread, NULL, TrackPlay, NULL);
 }
+ 

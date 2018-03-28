@@ -2,7 +2,8 @@
 #include "spi.h"
 
 static mraa_result_t status = MRAA_SUCCESS;
-void spi_cleanup() {
+
+void SPICleanup() {
   mraa_result_print(status);
 
   /* stop spi */
@@ -14,8 +15,10 @@ void spi_cleanup() {
   exit(-1);
 }
 
-void spi_setup() {
+void SPISetup() {
 
+  spi_lcd_or_led = 0;
+  
   /* initialize mraa for the platform (not needed most of the times) */
   mraa_init();
 
@@ -30,10 +33,8 @@ void spi_setup() {
   /* set GPIO to output */
   status = mraa_gpio_dir(cs_c, MRAA_GPIO_OUT);
   if (status != MRAA_SUCCESS) {
-    spi_cleanup();
+    SPICleanup();
   }
-
-  mraa_gpio_write(cs_c, 0); // need to start somewhere
 
   /* initialize SPI bus */
   spi_c = mraa_spi_init(SPI_BUS);
@@ -46,21 +47,20 @@ void spi_setup() {
   /* set SPI frequency */
   status = mraa_spi_frequency(spi_c, SPI_FREQ);
   if (status != MRAA_SUCCESS) {
-    spi_cleanup();
+    SPICleanup();
   }
 
   /* set big endian mode */
   status = mraa_spi_lsbmode(spi_c, 0);
   if (status != MRAA_SUCCESS) {
-    spi_cleanup();
+    SPICleanup();
   }
 
   /* MAX7219/21 chip needs the data in word size */
   status = mraa_spi_bit_per_word(spi_c, 8);
   if (status != MRAA_SUCCESS) {
     fprintf(stdout, "Failed to set SPI Device to 16Bit mode\n");
-    spi_cleanup();
+    SPICleanup();
   }
-
-
+  
 }
