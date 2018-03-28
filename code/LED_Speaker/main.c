@@ -16,8 +16,8 @@ void BlueDataCallback( int type, char* value) {
   case 1:
     break;
   case 2: // play/pause
-    val = atoi(value);
-    playback_pause = val;
+    //    val = atoi(value);
+    playback_pause ^= 0x01;
     break;
   case 3: // seek
     val = atoi(value);
@@ -31,7 +31,7 @@ void BlueDataCallback( int type, char* value) {
     break;
   case 7:
     //between 1 - 50
-    val_d = (double)(0.2f * atoi(value)) - 8.0f;
+    val_d = (double)(1.0f * atoi(value)) - 48.0f;
     playback_gain = pow(10.0, val_d / 20.0);
     break;
   case 8:
@@ -97,8 +97,8 @@ int main(int argc, char* argv[]) {
   pthread_create(&playback_thread, NULL, TrackPlay, NULL);
 
   // Bluetooth Activate!
-  //ServerStart();
-  //  fprintf(stdout, "Server Started\n");
+  ServerStart();
+  fprintf(stdout, "Server Started\n");
 
   while (1) {
     //scanf("%lf", &debugF);

@@ -36,7 +36,7 @@ static void ReadBufS16(void *in, double *out, int s)
   }
 }
 
-static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
+/*static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
   int i;
   int32_t a, b;
   int32_t m;
@@ -64,7 +64,7 @@ static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
 
     *(((int16_t*)m_buf) + i) = m;
   }
-}
+  }*/
 
 static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
   FILE* fp;
@@ -100,15 +100,15 @@ static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
 static int current_frame = 0;
 
 static void FramePlay(void* track_buf) {
-  //int j;
+  int j;
   
   // gets frame to a double buffer
   ReadBufS16(track_buf, buffer_d, buffer_size);
 
   // apply effects to buffer
-  //  for (j = 0; j < frames; j++) {
-  //    *(buffer_d + j) *= playback_gain;
-  //}
+  for (j = 0; j < frames; j++) {
+    *(buffer_d + j) *= playback_gain;
+  }
 
   // wrtie back to a int16_t buffer
   WriteBufS16(buffer_d, buffer, buffer_size);
@@ -170,21 +170,21 @@ void* TrackPlay(void* na) {
 
     for(current_frame = 0; current_frame < ( *(track_size + playback_cur_track) - 1); current_frame++, mixb++) {
       if (playback_pause == 1) {
-	current_frame--; // dirty fix
+	current_frame--; mixb--; // dirty fix
 	usleep(100000);
       } else {
 	if (play_test == 1) {
 	  play_test = 0;
 	  mixb =0;
 	}
-	TrackMix(
+	/*	TrackMix(
 		 *(track_buffer + 2) + (buffer_size * current_frame),
 		 *(track_buffer + 3) + (buffer_size * mixb),
 		 buffer_mix,
 		 buffer_size);
-	FramePlay(buffer_mix);
+		 FramePlay(buffer_mix);*/
 
-	//FramePlay(*(track_buffer + playback_cur_track) + (buffer_size * current_frame));
+	FramePlay(*(track_buffer + playback_cur_track + 2) + (buffer_size * current_frame));
       }
 
       if (playback_new_track == 1) {
