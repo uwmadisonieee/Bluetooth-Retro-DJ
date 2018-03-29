@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Raspberry_Pi_Base_Plate.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="208.94198"
+     inkscape:cy="953.74957"
+     inkscape:document-units="px"
+     inkscape:current-layer="g4594"
+     showgrid="false"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
+     inkscape:window-x="65"
+     inkscape:window-y="372"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       transform="translate(11.0752,-263.20538)"
+       id="layer1-6"
+       inkscape:label="Layer 1">
+      <text
+         transform="translate(0,527.95265)"
+         sodipodi:linespacing="125%"
+         id="text5680"
+         y="144.40942"
+         x="782"
+         style="font-style:normal;font-weight:normal;font-size:20px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+         xml:space="preserve"><tspan
+           y="144.40942"
+           x="782"
+           id="tspan5682"
+           sodipodi:role="line" /></text>
+      <g
+         inkscape:export-ydpi="92.5"
+         inkscape:export-xdpi="92.5"
+         inkscape:export-filename="/home/se/Dokumente/programming/github/raspberrypi-b-plus-case/images/raspberrypi-b-plus-case.png"
+         id="g3628">
+        <g
+           style="stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none"
+           id="g4594"
+           transform="translate(-56,4)">
+          <ellipse
+             id="path3755"
+             style="fill:none;stroke:#ff0000;stroke-width:0.35433069;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             cx="276.38193"
+             cy="290.72403"
+             rx="4.7445183"
+             ry="4.7395983" />
+          <ellipse
+             id="path3755-9"
+             style="fill:none;stroke:#ff0000;stroke-width:0.35433069;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             cx="276.38193"
+             cy="464.35071"
+             rx="4.7445183"
+             ry="4.7395983" />
+          <ellipse
+             id="path3755-6"
+             style="fill:none;stroke:#ff0000;stroke-width:0.35433069;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             cx="70.868309"
+             cy="464.35071"
+             rx="4.7445183"
+             ry="4.7395983" />
+          <ellipse
+             id="path3755-8"
+             style="fill:none;stroke:#ff0000;stroke-width:0.35433069;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             cx="70.868309"
+             cy="290.72403"
+             rx="4.7445183"
+             ry="4.7395983" />
+          <path
+             id="rect3808-3-9"
+             d="m 359.65154,276.94043 c 0,-0.1963 -0.14745,-0.34375 -0.34375,-0.34375 l -53.625,0 0,-7.28125 c 0,-0.46173 -0.11203,-0.91241 -0.28125,-1.3125 -0.16922,-0.40009 -0.38491,-0.75991 -0.6875,-1.0625 -0.30259,-0.30259 -0.66241,-0.54953 -1.0625,-0.71875 -0.40009,-0.16922 -0.85077,-0.25 -1.3125,-0.25 l -28.74999,0 c -0.46173,0 -0.91241,0.0808 -1.3125,0.25 -0.40009,0.16922 -0.75991,0.41616 -1.0625,0.71875 -0.30259,0.30259 -0.54953,0.66241 -0.71875,1.0625 -0.16922,0.40009 -0.25,0.85077 -0.25,1.3125 l 0,7.28125 -124.06251,0 0,-7.28125 c 0,-0.46173 -0.11203,-0.91241 -0.28125,-1.3125 -0.16922,-0.40009 -0.41616,-0.75991 -0.71875,-1.0625 -0.30259,-0.30259 -0.66241,-0.54953 -1.0625,-0.71875 -0.40009,-0.16922 -0.81952,-0.25 -1.28125,-0.25 l -28.75,0 c -0.46173,0 -0.91241,0.0808 -1.3125,0.25 -0.40009,0.16922 -0.75991,0.41616 -1.0625,0.71875 -0.30259,0.30259 -0.54953,0.66241 -0.71875,1.0625 -0.16922,0.40009 -0.25,0.85077 -0.25,1.3125 l 0,7.28125 -53.562504,0 c -0.1963,0 -0.34375,0.14745 -0.34375,0.34375 l 0,201.15625 c 0,0.1963 0.14745,0.34375 0.34375,0.34375 l 53.562504,0 0,7.28125 c 0,0.46173 0.11203,0.91241 0.28125,1.3125 0.16922,0.40009 0.41616,0.75992 0.71875,1.0625 0.30259,0.30258 0.66241,0.54953 1.0625,0.71875 0.40009,0.16922 0.81952,0.25 1.28125,0.25 l 28.75,0 c 0.46173,0 0.91241,-0.0808 1.3125,-0.25 0.40009,-0.16922 0.75991,-0.41617 1.0625,-0.71875 0.30259,-0.30258 0.54953,-0.66241 0.71875,-1.0625 0.16922,-0.40009 0.25,-0.85077 0.25,-1.3125 l 0,-7.28125 124.06251,0 0,7.28125 c 0,0.46173 0.11203,0.91241 0.28125,1.3125 0.16922,0.40009 0.41616,0.75992 0.71875,1.0625 0.30259,0.30258 0.66241,0.54953 1.0625,0.71875 0.40009,0.16922 0.81952,0.25 1.28125,0.25 l 28.74999,0 c 0.46173,0 0.91241,-0.0808 1.3125,-0.25 0.40009,-0.16922 0.75991,-0.41617 1.0625,-0.71875 0.30259,-0.30258 0.54953,-0.66241 0.71875,-1.0625 0.16922,-0.40009 0.25,-0.85077 0.25,-1.3125 l 0,-7.28125 53.625,0 c 0.1963,0 0.34375,-0.14745 0.34375,-0.34375 l 0,-201.15625 z"
+             style="fill:none;stroke:#ff0000;stroke-width:0.35433072;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             inkscape:connector-curvature="0" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
