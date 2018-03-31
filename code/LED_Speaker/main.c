@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
   PlaybackSetup();
   fprintf(stdout, "Playback Setup\n");
 
-  spi_lcd_or_led = 0;  SPISetup();
+/*  spi_lcd_or_led = 0;  SPISetup();
   fprintf(stdout, "SPI (and MRAA) Setup\n");
 
   LEDSetup();
@@ -93,11 +93,11 @@ int main(int argc, char* argv[]) {
 
   spi_lcd_or_led = 0;
   pthread_create(&spi_thread, NULL, SPILoop, NULL);
-
+*/
   pthread_create(&playback_thread, NULL, TrackPlay, NULL);
 
   // Bluetooth Activate!
-  ServerStart();
+  // ServerStart();
   fprintf(stdout, "Server Started\n");
 
   while (1) {

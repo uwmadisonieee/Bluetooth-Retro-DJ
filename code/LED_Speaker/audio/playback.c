@@ -9,13 +9,13 @@ static snd_pcm_hw_params_t *params;
 static snd_pcm_uframes_t frames;
 static snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
 
-static void* buffer;
+static void* buffer_frame;
 static void* buffer_mix;
 static double* buffer_d;
 static uint32_t buffer_size;
 
-static void**    track_buffer;
-static uint32_t* track_size;
+//static void**    track_buffer;
+//static uint32_t* track_size;
 
 double playback_gain;
 
@@ -66,7 +66,7 @@ static void ReadBufS16(void *in, double *out, int s)
   }
   }*/
 
-static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
+static int TrackLoad(char* file, track_t* track) {
   FILE* fp;
   uint32_t alloc_size;
   uint32_t f_len;
@@ -82,16 +82,17 @@ static int TrackLoad(char* file, void** track_buf, uint32_t* track_buf_size) {
   fseek(fp, 0, SEEK_SET);
 
   alloc_size = f_len + (buffer_size - (f_len % buffer_size));
-  *track_buf = malloc(alloc_size);
-  if (*track_buf == NULL) {
+  track->buffer = malloc(alloc_size);
+  if (track->buffer == NULL) {
     fprintf(stderr,"ERROR: malloc %s\n", file);
     fclose(fp);
     return -1;
   }
 
-  *track_buf_size = alloc_size / buffer_size;
-  fprintf(stderr, "\t%s \n\t\tFile: [%d]\tbuffer_size: [%d]\ttrack_buf_size: [%d]\talloc_size: [%d]\n", file, f_len, buffer_size, *track_buf_size, alloc_size); 
-  fread(*track_buf, f_len, 1, fp);
+  track->size = alloc_size / buffer_size;
+  track->time = (f_len - 4) / (TRACKS_RATE * 2);
+  fprintf(stderr, "\t%s \n\t\tFile: [%d]\tbuffer_size: [%d]\ttrack_buf_size: [%u]\talloc_size: [%d]\t time: [%u]\n", file, f_len, buffer_size, track->size, alloc_size, track->time); 
+  fread(track->buffer, f_len, 1, fp);
   fclose(fp);
 
   return 0;
@@ -101,7 +102,7 @@ static int current_frame = 0;
 
 static void FramePlay(void* track_buf) {
   int j;
-  
+
   // gets frame to a double buffer
   ReadBufS16(track_buf, buffer_d, buffer_size);
 
@@ -111,10 +112,10 @@ static void FramePlay(void* track_buf) {
   }
 
   // wrtie back to a int16_t buffer
-  WriteBufS16(buffer_d, buffer, buffer_size);
+  WriteBufS16(buffer_d, buffer_frame, buffer_size);
   
   // play audio
-  if ((pcm = snd_pcm_writei(pcm_handle, buffer, frames)) == -EPIPE) {
+  if ((pcm = snd_pcm_writei(pcm_handle, buffer_frame, frames)) == -EPIPE) {
     fprintf(stderr,"XRUN.\n");
     snd_pcm_prepare(pcm_handle);
   } else if (pcm < 0) {
@@ -168,7 +169,7 @@ void* TrackPlay(void* na) {
   // endless loop on track playing thread
   while (1) {
 
-    for(current_frame = 0; current_frame < ( *(track_size + playback_cur_track) - 1); current_frame++, mixb++) {
+    for(current_frame = 0; current_frame < ( tracks[playback_cur_track].size - 1); current_frame++, mixb++) {
       if (playback_pause == 1) {
 	current_frame--; mixb--; // dirty fix
 	usleep(100000);
@@ -183,8 +184,7 @@ void* TrackPlay(void* na) {
 		 buffer_mix,
 		 buffer_size);
 		 FramePlay(buffer_mix);*/
-
-	FramePlay(*(track_buffer + playback_cur_track + 2) + (buffer_size * current_frame));
+	FramePlay(tracks[playback_cur_track].buffer + (buffer_size * current_frame));
       }
 
       if (playback_new_track == 1) {
@@ -209,11 +209,12 @@ void* TrackPlay(void* na) {
 
 void PlaybackCleanup() {
   int i;
-  free(buffer);
+  free(buffer_frame);
+  free(buffer_mix);
   free(buffer_d);
 
   for(i = 0; i < tracks_count; i++) {
-    free(track_buffer[i]);
+    free(tracks[i].buffer);
   }
 }
 
@@ -290,9 +291,9 @@ static int TrackSetup() {
     memset(full_path, 0, sizeof(full_path));
 
     memcpy(full_path, path, strlen(path));
-    strcat(full_path, TracksAt(i));
+    strcat(full_path, tracks[i].name);
 
-    status = TrackLoad(full_path, track_buffer + i, &track_size[i]);
+    status = TrackLoad(full_path, &(tracks[i]) );
 
     if (status < 0) { // error occured
       return -1;
@@ -307,29 +308,27 @@ void PlaybackSetup() {
   PCMSetup();
   fprintf(stdout, "\tPCMSetup\n");
 
-  track_buffer = malloc(TRACKS_MAX_COUNT * sizeof(void*));
-  track_size = malloc(TRACKS_MAX_COUNT * sizeof(uint32_t));
-  if (track_buffer == NULL || track_size == NULL) {
-    fprintf(stderr,"ERROR: malloc track_buffer and track_size\n");
+  tracks = malloc(TRACKS_MAX_COUNT * sizeof(track_t));
+  if (tracks == NULL) {
+    fprintf(stderr,"ERROR: malloc tracks\n");
   }
 
   buffer_size = frames * channels * 2 /* 2 -> sample size */;
   //printf("Frames: %d \tChannels: %d \tbuffer_size: %d\n", frames, channels, buffer_size);
-  buffer = (void*) malloc(buffer_size);
-  if (buffer == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
 
+  buffer_frame = (void*) malloc(buffer_size);
   buffer_mix = (void*) malloc(buffer_size);
-  if (buffer_mix == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
-
   buffer_d = (double*) malloc(buffer_size);
+  if (buffer_mix == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
+  if (buffer_frame  == NULL){fprintf(stderr,"ERROR: malloc buffer\n");}
   if (buffer_d == NULL){fprintf(stderr,"ERROR: malloc buffer_d\n");}
 
   playback_new_track = 0;
-  playback_pause = 1; // start paused
+  playback_pause = 0; // start paused by setting as 1
   playback_cur_track = 0;
   playback_gain = 1.0f;
 
-  TracksReadFiles();
+  TracksReadFiles(tracks);
   fprintf(stdout, "\tTrack files read in\n");
 
   TrackSetup();

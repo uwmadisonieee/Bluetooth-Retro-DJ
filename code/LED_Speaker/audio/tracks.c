@@ -1,9 +1,8 @@
 #include "tracks.h"
 
-static char track_list[TRACKS_MAX_COUNT][TRACKS_NAME_SIZE];
 const double TRACKS_SEC_PER_FRAME = 0.085;
 
-void TracksReadFiles() {
+void TracksReadFiles(track_t* tracks) {
   tracks_count = 0;
    
   DIR *dir;
@@ -18,7 +17,7 @@ void TracksReadFiles() {
       // needs to be under name size length
       if (strlen(ent->d_name) > TRACKS_NAME_SIZE) { continue; }
 
-      strcpy(track_list[tracks_count], ent->d_name);
+      strcpy(tracks[tracks_count].name, ent->d_name);
       printf("Track [%d]: %s\n", tracks_count, ent->d_name);
       tracks_count++;
 
@@ -31,14 +30,6 @@ void TracksReadFiles() {
   }
 }
 
-char* TracksAt(int index) {
-  if (index >= TRACKS_MAX_COUNT || index < 0) {
-    return "DEADBEEF";
-  } else {
-    return track_list[index];
-  }
-}
-
 void TracksAsString(char* buffer) {
   int i;
   char *p;
@@ -46,7 +37,7 @@ void TracksAsString(char* buffer) {
     
   for(i = 0; i < tracks_count; i++) {
     memset(temp, 0, sizeof(temp));
-    strncpy(temp, track_list[i], strlen(track_list[i]) - 4); // remove .wav
+    strncpy(temp, tracks[i].name, strlen(tracks[i].name) - 4); // remove .wav
     for (p = temp; (p = strchr(p, '_')); ++p) { // replace _ for spaces
       *p = ' ';
     }
@@ -55,3 +46,6 @@ void TracksAsString(char* buffer) {
   }
 }
   
+void TracksAnalysis(void* buffer, uint32_t size, int index) {
+  
+}

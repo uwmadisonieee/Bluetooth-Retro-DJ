@@ -9,6 +9,7 @@
 #include <pthread.h>
 
 #include "tracks.h"
+
 int play_test;
 
 uint8_t playback_new_track;
@@ -17,6 +18,7 @@ uint8_t playback_pause;
 int playback_cur_track;
 
 pthread_t playback_thread;
+
 void* TrackPlay(void* na);
 
 void PlaybackSetup(void);
