@@ -99,12 +99,12 @@ int main(int argc, char* argv[]) {
   // Bluetooth Activate!
   // ServerStart();
   fprintf(stdout, "Server Started\n");
-
+  
   while (1) {
     //scanf("%lf", &debugF);
     //PlaybackSetGain(debugF);
     getchar();
-    play_test = 1;
+    playback_play_sample = 1;
   }
 
   PlaybackCleanup();

@@ -10,12 +10,12 @@
 
 #include "tracks.h"
 
-int play_test;
-
+uint8_t playback_play_sample;
 uint8_t playback_new_track;
 uint8_t playback_pause;
 
 int playback_cur_track;
+int playback_cur_sample;
 
 pthread_t playback_thread;
 
