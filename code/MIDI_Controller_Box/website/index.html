@@ -10,7 +10,7 @@
 	<link href="css/style.css" rel="stylesheet" type="text/css" />
 
 </head>
-<body>
+<body onload="init()">
 
 	<div id="screenPairing">
 		<div id="pairingText">
@@ -29,8 +29,7 @@
 		</div>
 
 		<div id="audioDiv">
-			<div id="audioVisualize">
-			</div>
+			<canvas id="audioVisualize"></canvas>
 			<div id="audioName">
 			</div>
 		</div>
@@ -42,11 +41,13 @@
 				<div id="gif2"></div>
 			</div>
 			<div id="gifSpeed">
-				50%
+				GIF SPEED: 50%
 			</div>
 		</div>
 		  
 		<div id="volumeDiv">
+			<div id="volumeSlider"></div>
+			<div id="volumeText">Volume: 50%</div>
 		</div>
 
 		<div id="songSelect">
@@ -58,6 +59,7 @@
 	<script type="text/javascript" src="src/testing.js"></script>
 	<script type="text/javascript" src="src/websocket.js"></script>
 	<script type="text/javascript" src="src/screens.js"></script>
+	<script type="text/javascript" src="src/controls.js"></script>
 	<script type="text/javascript" src="src/main.js"></script>
 
 </body>

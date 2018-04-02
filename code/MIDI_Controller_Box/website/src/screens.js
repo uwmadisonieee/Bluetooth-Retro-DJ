@@ -1,4 +1,3 @@
-var screenMode = 0;
 const screenPairing = document.getElementById("screenPairing");
 const mainDiv = document.getElementById("mainDiv");
 const spinningRecord = document.getElementById("spinningRecord");
@@ -13,9 +12,12 @@ const gif0 = document.getElementById("gif0");
 const gif1 = document.getElementById("gif1");
 const gif2 = document.getElementById("gif2");
 const gifSpeed = document.getElementById("gifSpeed");
-const volumeDiv = document.getElementById("volumeDiv");
+const volumeSlider = document.getElementById("volumeSlider");
+const volumeText = document.getElementById("volumeText");
 const songSelect = document.getElementById("songSelect");
 const fxSelect = document.getElementById("fxSelect");
+
+
 
 function screenGoto(index) {
     screenPairing.style.display = "none";

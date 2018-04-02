@@ -3,6 +3,7 @@ html, body {
     height: 100%;
     overflow: hidden;
     font-family: sans-serif;
+    background-color: #f0f8ff;
 }
 
 #screenPairing { 
@@ -30,6 +31,12 @@ html, body {
 #audioDiv{
 }
 #audioVisualize{
+    width: 600px;
+    height: 240px;
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+
 }
 #audioName{
 }
@@ -44,8 +51,33 @@ html, body {
 #gif2{
 }
 #gifSpeed{
+	position: absolute;
+	top: 10px;
+	right: 0px;
+    font-size: 18px;
+    text-align: center;
+    width: 200px;
+    font-weight: bold;
 }
-#volumeDiv{
+#volumeSlider{
+	position: absolute;
+	bottom: 100px;
+	right: 80px;
+	width: 0px;
+	height: 50px;
+	background-color: #fff;
+	box-shadow:
+	0 0 2px 20px #fff,
+	0 0 50px 50px #00f;
+}
+#volumeText{
+	position: absolute;
+	bottom: 10px;
+	right: 0px;
+    font-size: 18px;
+    text-align: left;
+    width: 140px;
+    font-weight: bold;
 }
 #songSelect{
 }
