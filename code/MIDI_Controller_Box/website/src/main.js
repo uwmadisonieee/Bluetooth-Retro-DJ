@@ -19,12 +19,21 @@ function setWebSocket() {
     }
 }
 
-
 function setup() {
-
+    // REMOVE
+    screenGoto(1);
 
 }
 
 function updateSonglist(song) {
     $('#trackList')[0].innerHTML += "<li>" + song + "</li>";
+}
+
+var song_count;
+function parseSongs(songs) {
+    var song_token = songs.split(";");
+    song_count = song_token.length / 3;
+    for (let i = 0; i < song_count; i++) {
+        
+    }
 }
