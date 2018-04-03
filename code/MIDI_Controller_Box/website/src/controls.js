@@ -10,7 +10,9 @@ function changeVolume(vol) {
 }
 
 function changeGifSpeed(speed) {
-	//gifSpeed.innerText = 
+	gifSpeed.innerText = "GIF SPEED: " + speed + "%";
+	gifWheel.style.strokeDashoffset = (250 - Math.round(speed * 1.25)).toString();
+	gifWheel.style.stroke = "rgb(255, 0," + (250 - speed*2) + ")";
 }
 
 function parseSongs(songs) {
@@ -28,7 +30,10 @@ function parseSongs(songs) {
 function setSong(index) {
 
     song_analysis = test_analysis;
-	drawVisualizer()
+	drawVisualizer();
+
+	audioName.innerText = song_list[index].name + " - " + song_list[index].artist;
+	audioLength.innerText = Math.floor(song_list[index].seconds/60) + ":" + (song_list[index].seconds%60);
 }
 
 const VIS_HEIGHT_F = 0.25;
@@ -38,7 +43,7 @@ function drawVisualizer() {
 	for (let i = 0; i < 150; i++) {
 
 		ctx.beginPath();
-		ctx.fillStyle = "rgb(255, 0," + (255 - song_analysis[i]) + ")";
+		ctx.fillStyle = "rgb(255, 10," + (255 - song_analysis[i]) + ")";
 
 		temp = (song_analysis[i] * VIS_HEIGHT_F);
 		ctx.fillRect(i*2, 75 - temp, 1, 2*temp);
@@ -51,9 +56,15 @@ function drawPlayed(index) {
 	ctx.lineWidth=1;
 
 	ctx.beginPath();
-	ctx.fillStyle = "#0000FF";
+	ctx.fillStyle = "#00FFFF";
 	temp = (song_analysis[index] * VIS_HEIGHT_F);
 	ctx.fillRect(index*2, 75 - temp, 1, 2*temp);
 	ctx.stroke();
-	
+}
+
+function togglePlayPause(){ 
+	play_pause ^= 1;
+	spinningRecord.style.animationPlayState = (play_pause) ? "running" : "paused";
+	startStopDiv.style.color = (play_pause) ? "#19ea00" : "#ff1f1f";
+	startStopDiv.innerHTML = (play_pause) ? "&#9658;" : "&#9612;&#9612;";
 }

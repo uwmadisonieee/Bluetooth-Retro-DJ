@@ -20,31 +20,50 @@
 
 	<div id="mainDiv">
 		
-		<div id="spinningRecord">
-		</div>
+		<img id="spinningRecord" src="src/spinning.png">
 		<div id="startStopDiv">
+			&#9612;&#9612;
 		</div>
 
 		<div id="sampleDiv">
+			<u>Current Sample</u>
+			<div id="sampleName">
+				BASS KICK
+			</div>
 		</div>
 
 		<div id="audioDiv">
 			<canvas id="audioVisualize"></canvas>
-			<div id="audioName">
+			<div id="audioName">				
+			</div>
+			<div id="audioArtist">				
+			</div>
+			<div id="audioStart">
+				0:00
+			</div>
+			<div id="audioLength">			
 			</div>
 		</div>
 
-		<div id="gifDiv">
-			<div id="gifSwap">
-				<div id="gif0"></div>
-				<div id="gif1"></div>
-				<div id="gif2"></div>
-			</div>
-			<div id="gifSpeed">
-				GIF SPEED: 50%
-			</div>
+		<div id="gifSpeed">
+			GIF SPEED: 50%
 		</div>
-		  
+		<div id="gifWheel">
+			<svg height="150" width="150">
+				<defs>
+				<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+		           <feGaussianBlur stdDeviation="8" result="blur"/>
+           			<feMerge>
+		               <feMergeNode in="blur"/>
+		               <feMergeNode in="SourceGraphic"/>
+		           </feMerge>
+		       </filter>
+			  </defs>
+			  <circle filter="url(#glow)" cx="75" cy="75" r="40" transform="rotate(180, 80,80)" />
+			</svg>
+		</div>
+		<div id="gifwheelCover"></div>
+
 		<div id="volumeDiv">
 			<div id="volumeSlider"></div>
 			<div id="volumeText">Volume: 50%</div>

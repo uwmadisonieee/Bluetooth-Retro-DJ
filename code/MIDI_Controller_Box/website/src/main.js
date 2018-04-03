@@ -2,6 +2,7 @@ var screenMode = 0;
 var song_list = [];
 var song_count = 0;
 var song_analysis;
+var play_pause = 0; // 1 is play
 var ctx;
 
 // $(document).ready(function() {
@@ -32,6 +33,7 @@ function setup() {
 
     ctx = audioVisualize.getContext("2d");
     setSong(0);
+    changeGifSpeed(50);
 }
 
 function updateSonglist(song) {
