@@ -2,7 +2,28 @@ html, body {
     margin: 0;
     height: 100%;
     overflow: hidden;
-    font-family: sans-serif;
+    font-family: Monoton;
+    color: white;
+    background-color: #1e1e1e;
+  	background: repeating-linear-gradient(45deg, #222222 0%, #222222 10%, #1e1e1e 0%, #1e1e1e 50%) 0 / 15px 15px;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Iceland';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Iceland'), local('Iceland-Regular'), url(Iceland.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Audiowide';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Audiowide Regular'), local('Audiowide-Regular'), url(Audiowide.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 #screenPairing { 
@@ -16,4 +37,158 @@ html, body {
 	font-size: 60px;
 	color: white;
 	padding-top: 160px;
+}
+
+#mainDiv{
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+#spinningRecord{
+	position: absolute;
+	left: 50px;
+	top: 20px;
+	max-height: 100px;
+	max-width: 100px;
+	animation: spin 4000ms infinite linear;
+	animation-play-state: paused;
+}
+#startStopDiv{
+	position: absolute;
+	text-align: center;
+	width: 107px;
+	left: 50px;
+	top: 130px;
+	font-size: 28px;
+	color: #ff1f1f;
+}
+@-webkit-keyframes neon1 {
+  from {
+    text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 8px #fff, 0 0 11px #FF1177, 0 0 14px #FF1177, 0 0 17px #FF1177, 0 0 20px #FF1177, 0 0 22px #FF1177;
+  }
+  to {
+    text-shadow: 0 0 1px #fff, 0 0 3px #fff, 0 0 5px #fff, 0 0 7px #FF1177, 0 0 9px #FF1177, 0 0 11px #FF1177, 0 0 13px #FF1177, 0 0 15px #FF1177;
+  }
+}
+#sampleDiv {
+	position: absolute;
+	text-align: center;
+	width: 350px;
+	left: 225px;
+    font-size: 26px;
+    font-weight: bold;
+	top: 40px;
+
+}
+#sampleName {	
+	font-family: Audiowide;
+	font-size: 34px;
+	position: absolute;	
+	width: 350px;
+	top: 65px;
+	color: #fff;
+	animation: neon1 4.5s ease-in-out infinite alternate;
+}
+#audioDiv{
+}
+#audioVisualize{
+    width: 600px;
+    height: 240px;
+    position: absolute;
+    bottom: 80px;
+    left: 10px;
+
+}
+@-webkit-keyframes neon2 {
+  from {
+    text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px #fff, 0 0 12px #228DFF, 0 0 15px #228DFF, 0 0 18px #228DFF, 0 0 21px #228DFF, 0 0 24px #228DFF;
+  }
+  to {
+    text-shadow: 0 0 1px #fff, 0 0 3px #fff, 0 0 5px #fff, 0 0 7px #228DFF, 0 0 9px #228DFF, 0 0 11px #228DFF, 0 0 13px #228DFF, 0 0 15px #228DFF;
+  }
+}
+
+#audioName{
+	position: absolute;
+    bottom: 20px;
+    text-align: center;
+    width: 600px;
+	left: 10px;
+	font-size: 40px;
+
+	text-decoration: none;
+  	transition: all 0.5s;  	
+ 	color: #228DFF;
+  	font-family: Iceland;
+  	animation: neon2 1.5s ease-in-out infinite alternate;
+}
+#audioStart{
+    position: absolute;
+	font-size: 14px;
+	bottom: 79px;
+    left: 10px;
+}
+#audioLength{
+    position: absolute;
+	font-size: 14px;
+	bottom: 79px;
+    left: 510px;
+    text-align: right;
+    width: 100px;
+}
+#gifSpeed{
+	position: absolute;
+	top: 40px;
+	right: 0px;
+    font-size: 22px;
+    text-align: center;
+    width: 200px;
+    font-weight: bold;
+}
+
+circle {
+	fill: transparent;
+	stroke: red;
+	stroke-width: 17px;
+	stroke-dasharray: 250;
+	stroke-dashoffset: 185;
+}
+#gifWheel{
+	position: absolute;
+	top: 55px;
+	right: 27px;
+	
+}
+#gifwheelCover{
+	position: absolute;
+	z-index: 1;
+	top: 70px;
+	right: 40px;
+	width: 30px;
+	height: 30px;
+}
+#volumeSlider{
+	position: absolute;
+	bottom: 100px;
+	right: 85px;
+	width: 0px;
+	height: 50px;
+	background-color: #fff;
+	box-shadow:
+	0 0 2px 20px #fff,
+	0 0 50px 50px #00f;
+}
+#volumeText{
+	position: absolute;
+	bottom: 10px;
+	right: 0px;
+    font-size: 25px;
+    text-align: left;
+    width: 160px;
+    font-weight: bold;
+}
+#songSelect{
+}
+#fxselect{
 }

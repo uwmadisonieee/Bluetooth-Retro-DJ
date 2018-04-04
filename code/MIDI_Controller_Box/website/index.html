@@ -10,7 +10,7 @@
 	<link href="css/style.css" rel="stylesheet" type="text/css" />
 
 </head>
-<body>
+<body onload="init()">
 
 	<div id="screenPairing">
 		<div id="pairingText">
@@ -18,16 +18,67 @@
 		</div>
 	</div>
 
-	<div id="screenTracks">
-	  <h1> SONG LIST TEST </h1>
-	  <ul id="trackList">
-	    
-	  </ul>
+	<div id="mainDiv">
+		
+		<img id="spinningRecord" src="src/spinning.png">
+		<div id="startStopDiv">
+			&#9612;&#9612;
+		</div>
+
+		<div id="sampleDiv">
+			<u>Current Sample</u>
+			<div id="sampleName">
+				BASS KICK
+			</div>
+		</div>
+
+		<div id="audioDiv">
+			<canvas id="audioVisualize"></canvas>
+			<div id="audioName">				
+			</div>
+			<div id="audioArtist">				
+			</div>
+			<div id="audioStart">
+				0:00
+			</div>
+			<div id="audioLength">			
+			</div>
+		</div>
+
+		<div id="gifSpeed">
+			GIF SPEED: 50%
+		</div>
+		<div id="gifWheel">
+			<svg height="150" width="150">
+				<defs>
+				<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+		           <feGaussianBlur stdDeviation="8" result="blur"/>
+           			<feMerge>
+		               <feMergeNode in="blur"/>
+		               <feMergeNode in="SourceGraphic"/>
+		           </feMerge>
+		       </filter>
+			  </defs>
+			  <circle filter="url(#glow)" cx="75" cy="75" r="40" transform="rotate(180, 80,80)" />
+			</svg>
+		</div>
+		<div id="gifwheelCover"></div>
+
+		<div id="volumeDiv">
+			<div id="volumeSlider"></div>
+			<div id="volumeText">Volume: 50%</div>
+		</div>
+
+		<div id="songSelect">
+		</div>
+		<div id="fxSelect">
+		</div>
 	</div>
 
 	<script type="text/javascript" src="src/testing.js"></script>
 	<script type="text/javascript" src="src/websocket.js"></script>
 	<script type="text/javascript" src="src/screens.js"></script>
+	<script type="text/javascript" src="src/controls.js"></script>
 	<script type="text/javascript" src="src/main.js"></script>
 
 </body>
