@@ -24,7 +24,7 @@ typedef struct track_t {
   uint32_t file_size; // not including 44 byte header
   uint32_t time; // ms
   void* buffer;
-  uint8_t analysis[TRACKS_ANALYSIS_SIZE];
+  char analysis[TRACKS_ANALYSIS_SIZE * 10];
 } track_t;
 
 typedef struct sample_t {
@@ -55,7 +55,5 @@ void TracksAsString(char* buffer);
 int TracksInfo(char* buffer, int index);
 
 void TracksAnalysis(track_t* track);
-
-int TracksPackAnalysis(void* buffer);
 
 #endif

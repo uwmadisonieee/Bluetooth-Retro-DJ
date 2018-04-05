@@ -190,7 +190,7 @@ static int current_frame = 0;
 
 static void FramePlay(void* track_buf) {
   int j;
-
+  
   // gets frame to a double buffer
   ReadBufS16(track_buf, buffer_d, frames);
 
@@ -210,7 +210,7 @@ static void FramePlay(void* track_buf) {
     snd_pcm_prepare(pcm_handle);
   } else if (pcm < 0) {
     fprintf(stderr, "ERROR. Can't write to PCM device. %s\n", snd_strerror(pcm));
-    }
+  }
 }
 
 void TrackChange(int index) {
@@ -253,6 +253,7 @@ void TrackSeek(int amount) {
   }
 }
 
+static uint8_t seg_reply = 0;
 void* TrackPlay(void* na) {
   int s_frame = 0;
   // idk what the fuck, but can't play audio files < 2 seconds
@@ -288,6 +289,16 @@ void* TrackPlay(void* na) {
       if (playback_new_track == 1) {
 	current_frame = 0;
 	playback_new_track = 0;
+	
+	seg_reply = 0;
+	ServerMessageInt(2, 0);
+      } else {
+	seg_reply++;
+	if (seg_reply >= 3){
+	  seg_reply = 0;
+	  ServerMessageInt(2, current_frame / (tracks[playback_cur_track].size/150));
+	}
+	    
       }
     }
 
@@ -391,7 +402,7 @@ static int TrackSetup() {
     strcat(full_path, tracks[i].name);
    
     TrackLoad(full_path, &(tracks[i]) );
-    TracksAnalysis(&tracks[i]);
+     TracksAnalysis(&tracks[i]);
   }
 
   // SAMPLE SETUP

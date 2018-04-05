@@ -89,6 +89,12 @@ void ServerMessage(int type, char* value) {
   write(client_fd, send_buffer, strlen(send_buffer));
 }
 
+void ServerMessageInt(int type, int value) {
+  if (connected == 0) { return; }
+  sprintf(send_buffer, "%d:%d", type, value);
+  write(client_fd, send_buffer, strlen(send_buffer));
+}
+
 
 void ServerStart() {
   int status;

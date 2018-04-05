@@ -5,7 +5,7 @@ extern int lcd_play_next;
 extern int lcd_speed;
 extern uint8_t spi_lcd_or_led;
 void BlueDataCallback( int type, char* value) {
-  int val;
+  int val, i;
   double val_d;
   //  FILE *fp;
   fprintf(stdout,"Type: %d\t\tValue: %s\n", type, value);
@@ -26,6 +26,7 @@ void BlueDataCallback( int type, char* value) {
   case 4: // new track
     val = atoi(value);
     TrackChange(val);
+    ServerMessage(1, tracks[playback_cur_track].analysis);
     break;
   case 5: // new sample
     val = atoi(value);
@@ -43,7 +44,7 @@ void BlueDataCallback( int type, char* value) {
     lcd_play_next = 1;
   case 9:
     // between 1 - 34
-    lcd_speed = (atoi(value) * 3000) + 10000;
+    lcd_speed = ((34-atoi(value)) * 3000) + 10000;
     // get gif speed between 10000 and 100000
     break;
   default:

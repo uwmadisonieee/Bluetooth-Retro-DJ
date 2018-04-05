@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 
+#include "../server/blueServer.h"
 #include "../display/led.h"
 #include "tracks.h"
 

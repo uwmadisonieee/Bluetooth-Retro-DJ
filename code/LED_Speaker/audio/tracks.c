@@ -132,8 +132,12 @@ void TracksAsString(char* buffer) {
     for (p = temp; (p = strchr(p, '_')); ++p) { // replace _ for spaces
       *p = ' ';
     }
-    strcat(buffer, ";");
     strcat(buffer, temp);
+    strcat(buffer, ";");
+    
+    sprintf(temp, "%d", tracks[i].time / 1000);
+    strcat(buffer, temp);
+    strcat(buffer, ";");
   }
 
   strcat(buffer, "=");
@@ -144,8 +148,8 @@ void TracksAsString(char* buffer) {
     for (p = temp; (p = strchr(p, '_')); ++p) { // replace _ for spaces
       *p = ' ';
     }
-    strcat(buffer, ";");
     strcat(buffer, temp);
+    strcat(buffer, ";");
   }
 
 }
@@ -162,9 +166,10 @@ int TracksInfo(char* buffer, int index) {
 void TracksAnalysis(track_t* track) {
   int i, j;
   int32_t max, cur;
+  char temp[16];
   // divide by 2 since its int16_t from a void*
   uint32_t stride = (track->file_size / TRACKS_ANALYSIS_SIZE) / 2;
-  
+  memset(track->analysis, 0, sizeof (track->analysis));
   for (i = 0; i < TRACKS_ANALYSIS_SIZE; i++) {
 
     max = 1; // non zero is always nice
@@ -175,15 +180,7 @@ void TracksAnalysis(track_t* track) {
       }
     }
     // 128 nerfs it down to 0-255
-    track->analysis[i] = (uint8_t)(max / 128);
+    sprintf(temp, "%d,", (uint8_t)(max / 128));
+    strcat(track->analysis, temp);
   }
-}
-
-int TracksPackAnalysis(void* buffer) {
-  int i = 0;
-  for (i = 0; i < tracks_count; i++) {
-    memcpy(buffer + (i*TRACKS_ANALYSIS_SIZE), &(tracks[i].analysis), TRACKS_ANALYSIS_SIZE);
-  }
-
-  return tracks_count * TRACKS_ANALYSIS_SIZE;
 }

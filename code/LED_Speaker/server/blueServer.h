@@ -24,5 +24,6 @@ callbackIntStr server_on_data;
 void ServerStart( void );
 
 void ServerMessage(int type, char* value);
+void ServerMessageInt(int type, int value);
 
 #endif
