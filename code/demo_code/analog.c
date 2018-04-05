@@ -5,8 +5,21 @@
 #include <ads1115.h>
 
 #define MY_BASE 2222
-#define POT_DIV 1320
+#define POT_DIV 880
 #define SLIDE_DIV 528
+
+static unsigned long l_gif_irq = 0;
+static unsigned long c_gif_irq = 0;
+
+void GifButton(void) {
+  c_gif_irq = millis();
+  if (c_gif_irq - l_gif_irq > 150) {
+    puts("gif");
+    //broadcastInt("0", 0);
+  }
+  l_gif_irq = c_gif_irq;
+}
+
 int main ( int argc, char* argv[] ) {
   int last_slider;
   int last_pot;
@@ -17,6 +30,8 @@ int main ( int argc, char* argv[] ) {
     puts("SAD"); exit(-1);
   }
 
+  wiringPiISR (4, INT_EDGE_FALLING, &GifButton);
+  
   ads1115Setup (MY_BASE, 0x48);
 
   last_slider = analogRead (MY_BASE + 0) / SLIDE_DIV;

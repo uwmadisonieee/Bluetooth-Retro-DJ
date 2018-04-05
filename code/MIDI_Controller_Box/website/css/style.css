@@ -1,3 +1,7 @@
+selector { cursor: none; }
+
+html * {cursor:none!important}
+
 html, body {
     margin: 0;
     height: 100%;

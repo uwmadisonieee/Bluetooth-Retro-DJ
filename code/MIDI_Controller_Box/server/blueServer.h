@@ -17,10 +17,13 @@ pthread_t bluetooth_thread;
 
 typedef void (*callbackIntStr)(int, char*);
 typedef void (*callbackStr)(char*);
+typedef void (*callbackVoid)(void*);
 callbackIntStr bluetooth_on_data;
 callbackStr bluetooth_on_init;
+callbackStr bluetooth_on_analysis;
 
 void BlueMessage(int type, char* value);
+void BlueMessageInt(int type, int value);
 
 void BlueStart( void );
 

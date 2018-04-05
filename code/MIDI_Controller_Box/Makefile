@@ -4,7 +4,7 @@ SHARED = -lpthread -lbluetooth -lwiringPi
 OBJ_SERVER = server/blueServer.o server/util.o server/server.o server/websocket.o server/http.o server/sha1.o server/base64.o
 
 main: server
-	$(CC) $(OBJ_SERVER) main.c $(SHARED) -o MIDI_Controller
+	$(CC) $(OBJ_SERVER) main.c $(SHARED) -o MIDI_Controller_Box
 
 server: $(OBJ_SERVER)
 
