@@ -27,10 +27,27 @@ function wsOnMessage(event) {
   case 1:
     break;
   case 2: // RED BUTTON
+      if (menuMode) {
+        hideMenu();
+      } else {
+        changePlayPause(message.value);
+      }
     break;
   case 3: // GREEN BUTTON
+    if (menuMode) {
+      toggleMenu();
+    } else {
+      showMenu();
+    }
     break;
   case 4: // BLUE BUTTON
+    if (menuMode) {
+      if (menuSelected) {
+        broadcast(3,song_select);
+      } else {
+        broadcast(4,song_select);
+      }
+    }
     break;
   case 5: // ROTARY ENCODER
       if (menuMode) {
@@ -48,8 +65,10 @@ function wsOnMessage(event) {
       }
     break;
   case 6: // VOLUME SLIDER
+    changeVolume(message.value);
     break; 
   case 7: // GIF POT
+    changeGifSpeed(message.value);
     break;
   case 8: //
     break;
