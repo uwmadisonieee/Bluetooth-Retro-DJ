@@ -1,10 +1,6 @@
 #include "main.h"
 #include <ads1115.h>
 
-#define MY_BASE 2222
-#define POT_DIV 1320
-#define SLIDE_DIV 528
-
 extern server_t* g_server;
 int server_connected = 0;
 
@@ -49,19 +45,110 @@ void BlueDataCallback(int type, char* value) {
   }  
 }
 
+static unsigned long l_red_irq = 0;
+static unsigned long c_red_irq = 0;
+static unsigned long l_green_irq = 0;
+static unsigned long c_green_irq = 0;
+static unsigned long l_blue_irq = 0;
+static unsigned long c_blue_irq = 0;
+static unsigned long l_gif_irq = 0;
+static unsigned long c_gif_irq = 0;
+
+void RedButton(void) {
+  c_red_irq = millis();
+  if (c_red_irq - l_red_irq > 20) {
+    play_pause ^= 1;
+    broadcastInt("2", play_pause);
+  }
+  l_red_irq = c_red_irq;
+}
+void GreenButton(void) {
+  c_green_irq = millis();
+  if (c_green_irq - l_green_irq > 20) {
+    broadcastInt("3", 0);
+  }
+  l_green_irq = c_green_irq;
+}
+void BlueButton(void) {
+  c_blue_irq = millis();
+  if (c_blue_irq - l_blue_irq > 20) {
+    broadcastInt("4", 0);
+  }
+  l_blue_irq = c_blue_irq;
+}
+void GifButton(void) {
+  c_gif_irq = millis();
+  if (c_gif_irq - l_gif_irq > 20) {
+    //BlueMessage(2, "-");
+  }
+  l_gif_irq = c_gif_irq;
+}
+
+unsigned char flag;
+unsigned char Last_RoB_Status;
+unsigned char Current_RoB_Status;
+int globalCounter = 0 ;
+void rotaryDeal(void)
+{
+  Last_RoB_Status = digitalRead(JOG_DATA_B);
+
+  while(!digitalRead(JOG_DATA_A)){
+    Current_RoB_Status = digitalRead(JOG_DATA_B);
+    flag = 1;
+  }
+
+  if(flag == 1){
+    flag = 0;
+    if((Last_RoB_Status == 0)&&(Current_RoB_Status == 1)){
+      //globalCounter ++;
+      //      printf("globalCounter : %d\n",globalCounter);
+
+    }
+    if((Last_RoB_Status == 1)&&(Current_RoB_Status == 0)){
+      //globalCounter --;
+      //      printf("globalCounter : %d\n",globalCounter);
+    }
+
+  }
+}
+
+static int last_slider;
+static int last_pot;
+static int slider_v;
+static int pot_v;
+
 void HardwareSetup() {
   if (wiringPiSetupGpio() < 0) {
     fprintf(stderr, "Failed to start wiringP\n");
     exit(-1);
   }
+
+  pinMode(BLUE_BUT, INPUT);
+  pinMode(GREEN_BUT, INPUT);
+  pinMode(RED_BUT, INPUT);
+  pinMode(GIF_BUT, INPUT);
+
+  wiringPiISR (BLUE_BUT, INT_EDGE_FALLING, &BlueButton);
+  wiringPiISR (GREEN_BUT, INT_EDGE_FALLING, &GreenButton);
+  wiringPiISR (RED_BUT, INT_EDGE_FALLING, &RedButton);
+  wiringPiISR (GIF_BUT, INT_EDGE_FALLING, &GifButton);
+
+  pinMode(JOG_DATA_A, INPUT);
+  pinMode(JOG_DATA_B, INPUT);
+
+  pullUpDnControl(JOG_DATA_A, PUD_UP);
+  pullUpDnControl(JOG_DATA_B, PUD_UP);
+
+  ads1115Setup (ADC_BASE, 0x48);
+
+  last_slider = analogRead (ADC_BASE + SLIDER_BASE) / SLIDER_DIV;
+  last_pot = analogRead (ADC_BASE + POT_BASE) / POT_DIV;
+  broadcastInt("6", last_slider * 2);
+  broadcastInt("7", last_pot * 3);
 }
 
 int main(int argc, char* argv[]) {
 
-  int last_slider;
-  int last_pot;
-  int slider_v;
-  int pot_v;
   char val[16];
   
   HardwareSetup();
@@ -75,32 +162,40 @@ int main(int argc, char* argv[]) {
   bluetooth_on_init = BlueDataInit;
   bluetooth_on_data = BlueDataCallback;
 
-  BlueStart();
+  //BlueStart();
 
-  ads1115Setup (MY_BASE, 0x48);
-
-  last_slider = analogRead (MY_BASE + 0) / SLIDE_DIV;
-  last_pot = analogRead (MY_BASE + 2) / POT_DIV;
   // main infinite loop
   while(1) {
 
     // TODO - gets blocked until first jog spin
-    slider_v = analogRead (MY_BASE + 0) / SLIDE_DIV;
-    pot_v = analogRead (MY_BASE + 2) / POT_DIV;
+    slider_v = analogRead (ADC_BASE + SLIDER_BASE) / SLIDER_DIV;
+    pot_v = analogRead (ADC_BASE + 2) / POT_DIV;
     if (slider_v != last_slider) {
       last_slider = slider_v;
       sprintf(val, "%d", slider_v);
-      BlueMessage(8, val);
-      //printf("slider: %d\n", slider_v);
+      broadcastInt("6", last_slider * 2);
+      //      BlueMessage(7, val);
+      printf("slider: %d\n", slider_v);
     }
 
     if (pot_v != last_pot) {
       last_pot = pot_v;
-      BlueMessage(9, val);
+      //BlueMessage(9, val);
+      broadcastInt("7", last_pot * 3);
       sprintf(val, "%d", pot_v);
       //printf("pot: %d\n", pot_v);
     }
+    rotaryDeal();
+
+    if (globalCounter > 0) {
+      globalCounter = 0;
+      //      BlueMessage(3, "5");
+    } else if (globalCounter < 0) {
+      globalCounter = 0;
+      //      BlueMessage(3, "-5");
+    }
     usleep(1000);
+    
   }
 
   return 0;

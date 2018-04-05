@@ -11,17 +11,20 @@
 #include <ads1115.h>
 #include <pthread.h>
 
+#define BLUE_BUT 19
+#define GREEN_BUT 13
+#define RED_BUT 13
+#define GIF_BUT 6
+#define JOG_DATA_A 17
+#define JOG_DATA_B 22
+
 #define ADC_BASE 2222
-#define JOG_BUT 0
-#define LED_BUT_1 0
-#define LED_BUT_2 0
-#define LED_BUT_3 0
-#define LED_BUT_1_LED 0
-#define LED_BUT_2_LED 0
-#define LED_BUT_3_LED 0
-#define JOG_DATA_A 0
-#define JOG_DATA_B 0
-#define SLIDER 0
-#define POT_KNOB 0
+#define SLIDER_BASE 3
+#define POT_BASE 1
+
+#define POT_DIV 880
+#define SLIDER_DIV 528
+
+uint8_t play_pause = 0;
 
 #endif
