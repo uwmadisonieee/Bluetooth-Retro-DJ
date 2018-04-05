@@ -176,7 +176,7 @@ void LCDSetup() {
     }
     closedir(dir);
   } else {
-    fprintf(stderr, "ERROR: Can't oppen directory!");
+    fprintf(stderr, "ERROR: Can't oppen directory! %s\n", TFT_GIF_PATH);
     exit(-2);
   }
 

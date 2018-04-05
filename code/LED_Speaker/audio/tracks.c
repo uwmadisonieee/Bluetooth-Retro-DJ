@@ -25,7 +25,7 @@ void TracksReadFiles(track_t* tracks) {
     }
     closedir(dir);
   } else {
-    fprintf(stderr, "ERROR: Can't oppen directory!");
+    fprintf(stderr, "ERROR: Can't oppen directory! %s \n", TRACKS_PATH);
     exit(-2);
   }
 
@@ -48,7 +48,7 @@ void TracksReadFiles(track_t* tracks) {
     }
     closedir(dir);
   } else {
-    fprintf(stderr, "ERROR: Can't oppen directory!");
+    fprintf(stderr, "ERROR: Can't oppen directory! %s\n", SAMPLES_PATH);
     exit(-2);
   }
 }
@@ -167,7 +167,7 @@ void TracksAnalysis(track_t* track) {
   
   for (i = 0; i < TRACKS_ANALYSIS_SIZE; i++) {
 
-    max = 0;
+    max = 1; // non zero is always nice
     for(j = 0; j < stride; j++) {
       cur = *((int16_t*)track->buffer + (i * stride) + j);
       if (cur > max) {

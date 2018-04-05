@@ -15,7 +15,7 @@
 
 #include "gif.h"
 
-#define TFT_GIF_PATH "./display/gifs/"
+#define TFT_GIF_PATH "/home/linaro/Bluetooth-Retro-DJ/code/LED_Speaker/display/gifs/"
 
 #define TFT_DC 31
 #define TFT_HRESET 26

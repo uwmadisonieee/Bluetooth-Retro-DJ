@@ -433,7 +433,7 @@ void PlaybackSetup() {
   if (buffer_d == NULL){fprintf(stderr,"ERROR: malloc buffer_d\n");}
 
   playback_new_track = 0;
-  playback_pause = 0; // start paused by setting as 1
+  playback_pause = 1; // start paused by setting as 1
   playback_cur_track = 0;
   playback_cur_sample = 0;
   playback_play_sample = 0;

@@ -8,7 +8,7 @@ void BlueDataCallback( int type, char* value) {
   int val;
   double val_d;
   //  FILE *fp;
-
+  fprintf(stdout,"Type: %d\t\tValue: %s\n", type, value);
   switch(type) {
   case 0:
     fprintf(stdout, "message: %s\n", value);
@@ -35,14 +35,14 @@ void BlueDataCallback( int type, char* value) {
     playback_play_sample = 1;
     break;
   case 7:
-    //between 1 - 50
+    //between 0 - 50
     val_d = (double)(1.0f * atoi(value)) - 48.0f;
     playback_gain = pow(10.0, val_d / 20.0);
     break;
   case 8:
     lcd_play_next = 1;
   case 9:
-    // between 1 - 30
+    // between 1 - 34
     lcd_speed = (atoi(value) * 3000) + 10000;
     // get gif speed between 10000 and 100000
     break;
@@ -139,14 +139,11 @@ int main(int argc, char* argv[]) {
   pthread_create(&playback_thread, NULL, TrackPlay, NULL);
 
   // Bluetooth Activate!
-  // ServerStart();
+  ServerStart();
   fprintf(stdout, "Server Started\n");
   
   while (1) {
-    //scanf("%lf", &debugF);
-    //PlaybackSetGain(debugF);
-    getchar();
-    playback_play_sample = 1;
+    sleep(5);
   }
 
   PlaybackCleanup();

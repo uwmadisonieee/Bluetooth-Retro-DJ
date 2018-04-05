@@ -15,17 +15,18 @@ static void printFatal(char* message, int id) {
 }
 
 static void sendSongData() {
-  int i;
+  //  int i;
   
   // Sure hope max buffer is less then string lol #ThugLife
   memset(send_buffer, 0, BLUE_MAX_BUFFER);
   TracksAsString(send_buffer);
   write(client_fd, send_buffer, strlen(send_buffer));
-
+  fprintf(stdout, "\tfirst init data sent\n");
   usleep(100000);
   
-  i = TracksPackAnalysis(track_analysis_buffer);
-  write(client_fd, send_buffer, i);
+  //  i = TracksPackAnalysis(track_analysis_buffer);
+  //  write(client_fd, send_buffer, i);
+  //fprintf(stdout, "\tsecond init data sent\n");
 }
 
 static void* serverDaemon() {
@@ -51,10 +52,11 @@ static void* serverDaemon() {
 
   listen(socket_fd, 1);
 
+  fprintf(stdout,"Waiting for client to connect\n");
   //init connect
   memset(buffer, 0, sizeof(buffer));
   client_fd = accept(socket_fd, (struct sockaddr*)&client, &client_size);
-
+  fprintf(stdout,"Connected to client\n");
   // init data
   sendSongData();
 

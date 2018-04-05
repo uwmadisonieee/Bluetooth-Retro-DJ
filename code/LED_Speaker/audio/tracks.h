@@ -11,8 +11,8 @@
 #define TRACKS_NAME_SIZE 128
 #define TRACKS_MAX_COUNT 30
 #define SAMPLE_MAX_COUNT 30
-#define TRACKS_PATH "./audio/tracks/"
-#define SAMPLES_PATH "./audio/samples/"
+#define TRACKS_PATH "/home/linaro/Bluetooth-Retro-DJ/code/LED_Speaker/audio/tracks/"
+#define SAMPLES_PATH "/home/linaro/Bluetooth-Retro-DJ/code/LED_Speaker/audio/samples/"
 #define TRACKS_RATE 44100
 #define TRACKS_ANALYSIS_SIZE 150
 
