@@ -22,7 +22,7 @@
 #define SLIDER_BASE 3
 #define POT_BASE 1
 
-#define POT_DIV 777
+#define POT_DIV 770
 #define SLIDER_DIV 519
 
 uint8_t play_pause = 1;

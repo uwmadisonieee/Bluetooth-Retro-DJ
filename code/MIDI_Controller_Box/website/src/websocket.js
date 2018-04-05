@@ -1,6 +1,6 @@
 // global WebSocket pointer
 var webSocket;
-const SEEK_RATE = 5;
+const SEEK_RATE = 2;
 // Used to package values to be sent down to C
 function broadcast(key, ...values) {
     if (isNaN(key )) { return false; }
@@ -27,14 +27,10 @@ function wsOnMessage(event) {
     break;
   case 1:
       // analysis buffers
-    console.log(message);
-    for (let i = 0; i < song_count; i++) {
-      //song_list[i].analysis = new ArrayBuffer(150);
-      for (let j=0; j<150; j++) {
-        song_list[i].analysis[j] = message.value.charCodeAt((i*150) + j);
-      }
-    }
-
+      var temp = message.value.split(",");
+      temp = temp.slice(0, temp.length - 1);
+      song_analysis = new Uint8Array(temp);
+      drawVisualizer();
     break;
   case 2: // RED BUTTON
       if (menuMode) {

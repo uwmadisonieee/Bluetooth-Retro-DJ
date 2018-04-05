@@ -44,7 +44,7 @@ void BlueDataInit(char* value) {
   //  while (token != NULL) {
 
     broadcastString("0", value);
-    fprintf(stdout, "bluedatainit done\n");
+    fprintf(stdout, "\n\n%s\n\nbluedatainit done\n", value);
     //    token = strtok(NULL, s);
     //  }
 
@@ -60,9 +60,11 @@ void BlueDataCallback(int type, char* value) {
   
   switch(type) {
   case 0:
+    break;
+  case 1:
+    fprintf(stdout, "\n\n%s\n\n", value);
     broadcastString("1", value);
     break;
-
   default:
     fprintf(stderr, "Not a valid type [%d]\n", type);
     break;
@@ -115,24 +117,26 @@ void* rotaryDeal(void* na)
   unsigned char Last_RoB_Status;
   unsigned char Current_RoB_Status;
 
-  Last_RoB_Status = digitalRead(JOG_DATA_B);
-
-  while(!digitalRead(JOG_DATA_A)){
-    Current_RoB_Status = digitalRead(JOG_DATA_B);
-    flag = 1;
-  }
-
-  if(flag == 1){
-    flag = 0;
-    if((Last_RoB_Status == 0)&&(Current_RoB_Status == 1)){
-      broadcastInt("5", 1);
-      //fprintf(stdout, "ROTARY ++\n");
+  while(1) {
+    Last_RoB_Status = digitalRead(JOG_DATA_B);
+    
+    while(!digitalRead(JOG_DATA_A)){
+      Current_RoB_Status = digitalRead(JOG_DATA_B);
+      flag = 1;
     }
-    if((Last_RoB_Status == 1)&&(Current_RoB_Status == 0)){
-      broadcastInt("5", -1);
-      //fprintf(stdout, "ROTARY --\n");
-    }
+    
+    if(flag == 1){
+      flag = 0;
+      if((Last_RoB_Status == 0)&&(Current_RoB_Status == 1)){
+	broadcastInt("5", 1);
+	//fprintf(stdout, "ROTARY ++\n");
+      }
+      if((Last_RoB_Status == 1)&&(Current_RoB_Status == 0)){
+	broadcastInt("5", -1);
+	//fprintf(stdout, "ROTARY --\n");
+      }
 
+    }
   }
 }
 
@@ -182,7 +186,7 @@ int main(int argc, char* argv[]) {
       rotaryDeal();
       //usleep(500000);
       }*/
-
+  status = pthread_create(&rotary_thread, NULL, rotaryDeal, NULL);
   g_server = (server_t*)malloc(sizeof(server_t));
   g_server->port = 6419;
   g_server->onSocketMessage = WebDataCallback;
@@ -193,14 +197,14 @@ int main(int argc, char* argv[]) {
   bluetooth_on_analysis = BlueDataAnalysis;
   bluetooth_on_data = BlueDataCallback;
 
-  BlueStart();
-
   while(server_connected == 0) {}
+  
+  BlueStart();
   
   broadcastInt("6", last_slider * 2);
   broadcastInt("7", last_pot * 3);
 
-  status = pthread_create(&rotary_thread, NULL, rotaryDeal, NULL);
+
 
   if (status < 0) {
     fprintf(stderr, "Failed to start rotary thread");

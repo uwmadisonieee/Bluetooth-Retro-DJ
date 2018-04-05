@@ -40,7 +40,7 @@ function setSong(index) {
 }
 
 function parseSamples(samples) {
-	sample_list = sample.split(";").slice(0,sample.split(";").length - 1);
+    sample_list = samples.split(";").slice(0,samples.split(";").length - 1);
     sample_count = sample_list.length;
     setSelectSample(0);
 }
@@ -98,7 +98,7 @@ function setSelectSong(index) {
 		}
 	}
 
-	if (index < selectItemCount) {
+	if (index <= selectItemCount) {
 		selectSongUp.style.visibility = "hidden";
 		selectSongDown.style.visibility = "visible";
 	} else if (offset + 5 >= song_count) {		
@@ -129,7 +129,7 @@ function setSelectSample(index) {
 		}
 	}
 
-	if (index < selectItemCount) {
+	if (index <= selectItemCount) {
 		selectSampleUp.style.visibility = "hidden";
 		selectSampleDown.style.visibility = "visible";
 	} else if (offset + 5 >= sample_count) {		
@@ -139,4 +139,15 @@ function setSelectSample(index) {
 		selectSampleUp.style.visibility = "visible";
 		selectSampleDown.style.visibility = "visible";
 	}
+
+}
+
+
+function changeSampleName(name) {
+    sampleName.innerText = name.toUpper();
+}
+
+
+function changeSongName(name) {
+    
 }
