@@ -5,6 +5,7 @@ extern server_t* g_server;
 int server_connected = 0;
 
 void WebDataCallback(int type, char* value) {
+
   switch(type) {
   case 0:
     server_connected = 1;
@@ -12,7 +13,22 @@ void WebDataCallback(int type, char* value) {
   case 1:
     BlueMessage(0, value);
     break;
-
+  case 2:
+    BlueMessageInt(2, play_pause);
+  case 3:
+    BlueMessage(3, value);
+    break;
+  case 4:
+    fprintf(stdout, "Song Select: %s\n", value);
+    BlueMessage(4, value);
+    break;
+  case 5:
+    fprintf(stdout, "Sample Select: %s\n", value);
+    BlueMessage(5, value);
+    break;
+  case 6:
+    BlueMessage(6, value);
+    break;
   default:
     fprintf(stderr, "Not a valid type [%d]\n", type);
     break;
@@ -20,25 +36,35 @@ void WebDataCallback(int type, char* value) {
 }
 
 void BlueDataInit(char* value) {
-  const char s[2] = ";";
-  char *token;
-  char send_buffer[4096];
+  //  const char s[2] = ";";
+  //  char *token;
+  //  char send_buffer[4096];
 
-  token = strtok(value, s);
-  while (token != NULL) {
-    broadcastString("0", token);
-    token = strtok(NULL, s);
-  }
+  //  token = strtok(value, s);
+  //  while (token != NULL) {
 
+    broadcastString("0", value);
+    fprintf(stdout, "\n\n%s\n\nbluedatainit done\n", value);
+    //    token = strtok(NULL, s);
+    //  }
+
+}
+
+void BlueDataAnalysis(char* value) {
+  fprintf(stdout, "bluedataAnalysis\n");
+  broadcastString("1", value);
+  fprintf(stdout, "bluedataAnalysis done\n");
 }
 
 void BlueDataCallback(int type, char* value) {
   
   switch(type) {
   case 0:
+    break;
+  case 1:
+    fprintf(stdout, "\n\n%s\n\n", value);
     broadcastString("1", value);
     break;
-
   default:
     fprintf(stderr, "Not a valid type [%d]\n", type);
     break;
@@ -79,36 +105,38 @@ void BlueButton(void) {
 void GifButton(void) {
   c_gif_irq = millis();
   if (c_gif_irq - l_gif_irq > 20) {
-    //BlueMessage(2, "-");
+   BlueMessage(8, "-");
   }
   l_gif_irq = c_gif_irq;
 }
 
-unsigned char flag;
-unsigned char Last_RoB_Status;
-unsigned char Current_RoB_Status;
-int globalCounter = 0 ;
-void rotaryDeal(void)
+pthread_t rotary_thread;
+void* rotaryDeal(void* na)
 {
-  Last_RoB_Status = digitalRead(JOG_DATA_B);
+  unsigned char flag;
+  unsigned char Last_RoB_Status;
+  unsigned char Current_RoB_Status;
 
-  while(!digitalRead(JOG_DATA_A)){
-    Current_RoB_Status = digitalRead(JOG_DATA_B);
-    flag = 1;
-  }
-
-  if(flag == 1){
-    flag = 0;
-    if((Last_RoB_Status == 0)&&(Current_RoB_Status == 1)){
-      //globalCounter ++;
-      //      printf("globalCounter : %d\n",globalCounter);
+  while(1) {
+    Last_RoB_Status = digitalRead(JOG_DATA_B);
+    
+    while(!digitalRead(JOG_DATA_A)){
+      Current_RoB_Status = digitalRead(JOG_DATA_B);
+      flag = 1;
+    }
+    
+    if(flag == 1){
+      flag = 0;
+      if((Last_RoB_Status == 0)&&(Current_RoB_Status == 1)){
+	broadcastInt("5", 1);
+	//fprintf(stdout, "ROTARY ++\n");
+      }
+      if((Last_RoB_Status == 1)&&(Current_RoB_Status == 0)){
+	broadcastInt("5", -1);
+	//fprintf(stdout, "ROTARY --\n");
+      }
 
     }
-    if((Last_RoB_Status == 1)&&(Current_RoB_Status == 0)){
-      //globalCounter --;
-      //      printf("globalCounter : %d\n",globalCounter);
-    }
-
   }
 }
 
@@ -143,16 +171,22 @@ void HardwareSetup() {
 
   last_slider = analogRead (ADC_BASE + SLIDER_BASE) / SLIDER_DIV;
   last_pot = analogRead (ADC_BASE + POT_BASE) / POT_DIV;
-  broadcastInt("6", last_slider * 2);
-  broadcastInt("7", last_pot * 3);
 }
 
 int main(int argc, char* argv[]) {
-
+  int status;
   char val[16];
   
   HardwareSetup();
-  
+  /*
+    while(1){
+     slider_v = analogRead (ADC_BASE + SLIDER_BASE) / SLIDER_DIV;;
+      pot_v = analogRead (ADC_BASE + POT_BASE) / POT_DIV;
+      //      printf("TEST: S: %d\tP: %d\n", slider_v, pot_v); usleep(100000); continue;
+      rotaryDeal();
+      //usleep(500000);
+      }*/
+  status = pthread_create(&rotary_thread, NULL, rotaryDeal, NULL);
   g_server = (server_t*)malloc(sizeof(server_t));
   g_server->port = 6419;
   g_server->onSocketMessage = WebDataCallback;
@@ -160,40 +194,45 @@ int main(int argc, char* argv[]) {
   startServer();
 
   bluetooth_on_init = BlueDataInit;
+  bluetooth_on_analysis = BlueDataAnalysis;
   bluetooth_on_data = BlueDataCallback;
 
-  //BlueStart();
+  while(server_connected == 0) {}
+  
+  BlueStart();
+  
+  broadcastInt("6", last_slider * 2);
+  broadcastInt("7", last_pot * 3);
 
+
+
+  if (status < 0) {
+    fprintf(stderr, "Failed to start rotary thread");
+    exit(-1);
+  }
   // main infinite loop
   while(1) {
 
     // TODO - gets blocked until first jog spin
     slider_v = analogRead (ADC_BASE + SLIDER_BASE) / SLIDER_DIV;
-    pot_v = analogRead (ADC_BASE + 2) / POT_DIV;
+    pot_v = analogRead (ADC_BASE + POT_BASE) / POT_DIV;
+
     if (slider_v != last_slider) {
       last_slider = slider_v;
       sprintf(val, "%d", slider_v);
+      BlueMessage(7, val);
       broadcastInt("6", last_slider * 2);
-      //      BlueMessage(7, val);
-      printf("slider: %d\n", slider_v);
+      //printf("slider: %d\n", slider_v);
     }
 
     if (pot_v != last_pot) {
       last_pot = pot_v;
-      //BlueMessage(9, val);
-      broadcastInt("7", last_pot * 3);
       sprintf(val, "%d", pot_v);
+      BlueMessage(9, val);
+      broadcastInt("7", last_pot * 3);
       //printf("pot: %d\n", pot_v);
     }
-    rotaryDeal();
 
-    if (globalCounter > 0) {
-      globalCounter = 0;
-      //      BlueMessage(3, "5");
-    } else if (globalCounter < 0) {
-      globalCounter = 0;
-      //      BlueMessage(3, "-5");
-    }
     usleep(1000);
     
   }

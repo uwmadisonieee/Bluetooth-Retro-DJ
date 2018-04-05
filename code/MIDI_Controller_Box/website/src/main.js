@@ -7,6 +7,9 @@ var sample_list = [];
 var sample_count = 0;
 var sample_select = 0; 
 
+var current_song = 0;
+var current_sample = 0;
+
 var song_analysis;
 var play_pause = 0; // 1 is play
 var menuSelected = 0; // so it toggles 1 at setup
@@ -35,8 +38,8 @@ function setWebSocket() {
 
 function setup() {
     // REMOVE
-    screenGoto(1);
-    showMenu();
+   // screenGoto(1);
+  //  showMenu();
 
     ctx = audioVisualize.getContext("2d");
     setSong(0);

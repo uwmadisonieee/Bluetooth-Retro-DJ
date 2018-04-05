@@ -48,6 +48,7 @@ function screenGoto(index) {
 var menuMode = 0;
 function showMenu() {
 	menuMode = 1;
+	toggleMenu();
 	songSelect.style.left = "0px";
 	fxSelect.style.right = "0px";
 	instructionSelect.style.bottom = "0px";

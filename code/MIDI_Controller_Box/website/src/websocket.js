@@ -1,6 +1,6 @@
 // global WebSocket pointer
 var webSocket;
-
+const SEEK_RATE = 1;
 // Used to package values to be sent down to C
 function broadcast(key, ...values) {
     if (isNaN(key )) { return false; }
@@ -16,29 +16,28 @@ var songList = [];
 function wsOnMessage(event) {
 // console.log(event);
   // Message looks like => { "type" : 1, "value" : 0 }
-  var message = JSON.parse(event.data);
+    var message = JSON.parse(event.data);
 
   switch(parseInt(message.type)) {
   case 0: // add to song list
       var divid = message.value.split("=");
       parseSongs(divid[0]);
       parseSamples(divid[1]);
+      if (screenMode == 0) { screenGoto(1); } // ready to go
     break;
-  case 1: // analysis buffers
-    console.log(message);
-    for (let i = 0; i < song_count; i++) {
-      song_list[i].analysis = new ArrayBuffer(150);
-      for (let j=0; j<150; j++) {
-        song_list[i].analysis[j] = message.value.charCodeAt((i*150) + j);
-      }
-    }
-    if (screenMode == 0) { screenGoto(1); } // ready to go
+  case 1:
+      // analysis buffers
+      var temp = message.value.split(",");
+      temp = temp.slice(0, temp.length - 1);
+      song_analysis = new Uint8Array(temp);
+      drawVisualizer();
     break;
   case 2: // RED BUTTON
       if (menuMode) {
         hideMenu();
       } else {
-        changePlayPause(message.value);
+          changePlayPause(message.value);
+	  broadcast(2,0);
       }
     break;
   case 3: // GREEN BUTTON
@@ -51,10 +50,17 @@ function wsOnMessage(event) {
   case 4: // BLUE BUTTON
     if (menuMode) {
       if (menuSelected) {
-        broadcast(3,song_select);
-      } else {
         broadcast(4,song_select);
+        current_song = song_select;
+        setSong(song_select);
+      } else {
+        broadcast(5,sample_select);
+        current_sample = sample_select;
+        sampleName.innerText = sample_list[current_sample].toUpperCase();
       }
+      hideMenu();
+    } else {
+	broadcast(6,0);
     }
     break;
   case 5: // ROTARY ENCODER
@@ -65,11 +71,13 @@ function wsOnMessage(event) {
           else if (song_select >= song_count) {song_select = song_count-1;}
           setSelectSong(song_select);
         } else {
-          samnple_select += message.value;          
-          if (samnple_select < 0) {samnple_select = 0;}
-          else if (samnple_select >= sample_count) {samnple_select = sample_count-1;}
-          setSelectSong(samnple_select);
+          sample_select += message.value;          
+          if (sample_select < 0) {sample_select = 0;}
+          else if (sample_select >= sample_count) {sample_select = sample_count-1;}
+          setSelectSample(sample_select);
         }
+      } else {
+	  broadcast(3, SEEK_RATE);
       }
     break;
   case 6: // VOLUME SLIDER
@@ -90,7 +98,14 @@ function wsOnMessage(event) {
 /////////////////////////////////////
 // for testing to callback echo ws //
 /////////////////////////////////////
-function testInit() {    
-    webSocket.send('{"type":1,"value":' + test_songs + '}');
+function testWS(i, j) {    
+    webSocket.send('{"type":"'+i+'" ,"value":'+j+'}');
 }
 
+function testInit( ){
+  webSocket.send('{"type":"0" ,"value":"'+test_songs+'"}');
+}
+
+function testA( ){
+  webSocket.send('{"type":"1" ,"value":"'+test_a+'"}');
+}

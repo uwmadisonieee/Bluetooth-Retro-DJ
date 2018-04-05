@@ -17,12 +17,12 @@ function changeGifSpeed(speed) {
 
 function parseSongs(songs) {
     var song_token = songs.split(";");
-    song_count = (song_token.length-1) / 3;
+    song_count = (song_token.length-1) / 2;
     for (let i = 0; i < song_count; i++) {
         song_list.push({
-        	"name" : song_token[3*i],
-        	"artist" : song_token[3*i+1],
-        	"seconds" : song_token[3*i+2],
+        	"name" : song_token[2*i].substring(0,song_token[2*i].indexOf("  ")),
+        	"artist" : song_token[2*i].substr(song_token[2*i].indexOf("  ") + 2),
+        	"seconds" : song_token[2*i+1],
         	"analysis" : new ArrayBuffer(150)
         });
     }
@@ -31,22 +31,19 @@ function parseSongs(songs) {
 }
 
 function setSong(index) {
-
-    song_analysis = test_analysis;
-	drawVisualizer();
-
 	audioName.innerText = song_list[index].name + " - " + song_list[index].artist;
 	audioLength.innerText = Math.floor(song_list[index].seconds/60) + ":" + (song_list[index].seconds%60);
 }
 
 function parseSamples(samples) {
-	sample_list = samples.split(";");
+    sample_list = samples.split(";").slice(0,samples.split(";").length - 1);
     sample_count = sample_list.length;
     setSelectSample(0);
 }
 
 const VIS_HEIGHT_F = 0.25;
 function drawVisualizer() {
+	ctx.clearRect(0, 0, audioVisualize.width, audioVisualize.height);
 	let temp;
 	ctx.lineWidth=1;
 	for (let i = 0; i < 150; i++) {
@@ -98,7 +95,7 @@ function setSelectSong(index) {
 		}
 	}
 
-	if (index < selectItemCount) {
+	if (index <= selectItemCount) {
 		selectSongUp.style.visibility = "hidden";
 		selectSongDown.style.visibility = "visible";
 	} else if (offset + 5 >= song_count) {		
@@ -129,7 +126,7 @@ function setSelectSample(index) {
 		}
 	}
 
-	if (index < selectItemCount) {
+	if (index <= selectItemCount) {
 		selectSampleUp.style.visibility = "hidden";
 		selectSampleDown.style.visibility = "visible";
 	} else if (offset + 5 >= sample_count) {		
@@ -139,4 +136,5 @@ function setSelectSample(index) {
 		selectSampleUp.style.visibility = "visible";
 		selectSampleDown.style.visibility = "visible";
 	}
+
 }

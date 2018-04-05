@@ -7,11 +7,15 @@ static int client_fd;
 static struct sockaddr_rc server = {0};
 
 void BlueMessage(int type, char* value) {
-
   char send_buffer[BLUE_MAX_BUFFER];
   sprintf(send_buffer, "%d:%s", type, value);
   write(client_fd, send_buffer, strlen(send_buffer));
-  
+}
+
+void BlueMessageInt(int type, int value) {
+  char send_buffer[BLUE_MAX_BUFFER];
+  sprintf(send_buffer, "%d:%d", type, value);
+  write(client_fd, send_buffer, strlen(send_buffer));
 }
 
 static void* BlueDaemon() {
@@ -30,14 +34,22 @@ static void* BlueDaemon() {
   if (status < 0) {
     fprintf(stderr, "Error with bluetooth connection\n");
   } else {
-    fprintf(stdout, "Connected!\n");
+    fprintf(stdout, "Connected to Speaker!\n");
   }
 
+  
+  fprintf(stdout, "Waiting for init bluetooth\n");
   // init data
   status = read(client_fd, buffer, sizeof(buffer));
   bluetooth_on_init(buffer);
   memset(buffer, 0, sizeof(buffer));
-
+  
+  // init data
+  //  status = read(client_fd, buffer, sizeof(buffer));
+  //  bluetooth_on_analysis(buffer);
+  //  memset(buffer, 0, sizeof(buffer));
+  sleep(1);
+  fprintf(stdout, "Starting main blue daemon loop\n");
   while(1) {
     status = read(client_fd, buffer, sizeof(buffer));
     if (status > 0) {
@@ -46,7 +58,7 @@ static void* BlueDaemon() {
       // 100% assuming data in in key,value form
       int type = atoi(strtok(buffer, s));
       char* value = strtok(NULL, s);
-
+      fprintf(stdout, "Sending data %d\n", type);
       bluetooth_on_data(type,value);
       memset(buffer, 0, sizeof(buffer));
     }
