@@ -70,10 +70,10 @@ function wsOnMessage(event) {
           else if (song_select >= song_count) {song_select = song_count-1;}
           setSelectSong(song_select);
         } else {
-          samnple_select += message.value;          
-          if (samnple_select < 0) {samnple_select = 0;}
-          else if (samnple_select >= sample_count) {samnple_select = sample_count-1;}
-          setSelectSong(samnple_select);
+          sample_select += message.value;          
+          if (sample_select < 0) {sample_select = 0;}
+          else if (sample_select >= sample_count) {sample_select = sample_count-1;}
+          setSelectSample(sample_select);
         }
       } else {
 	  broadcast(3, SEEK_RATE);
@@ -97,7 +97,10 @@ function wsOnMessage(event) {
 /////////////////////////////////////
 // for testing to callback echo ws //
 /////////////////////////////////////
-function testInit() {    
-    webSocket.send('{"type":1,"value":' + test_songs + '}');
+function testWS(i, j) {    
+    webSocket.send('{"type":"'+i+'" ,"value":'+j+'}');
 }
 
+function testInit( ){
+  webSocket.send('{"type":"0" ,"value":"'+test_songs+'"}');
+}

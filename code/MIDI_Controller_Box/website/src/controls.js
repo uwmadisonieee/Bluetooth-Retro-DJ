@@ -17,12 +17,12 @@ function changeGifSpeed(speed) {
 
 function parseSongs(songs) {
     var song_token = songs.split(";");
-    song_count = (song_token.length-1) / 3;
+    song_count = (song_token.length-1) / 2;
     for (let i = 0; i < song_count; i++) {
         song_list.push({
-        	"name" : song_token[3*i],
-        	"artist" : song_token[3*i+1],
-        	"seconds" : song_token[3*i+2],
+        	"name" : song_token[2*i].substring(0,song_token[2*i].indexOf("  ")),
+        	"artist" : song_token[2*i].substr(song_token[2*i].indexOf("  ") + 2),
+        	"seconds" : song_token[2*i+1],
         	"analysis" : new ArrayBuffer(150)
         });
     }
@@ -40,7 +40,7 @@ function setSong(index) {
 }
 
 function parseSamples(samples) {
-	sample_list = samples.split(";");
+	sample_list = sample.split(";").slice(0,sample.split(";").length - 1);
     sample_count = sample_list.length;
     setSelectSample(0);
 }
