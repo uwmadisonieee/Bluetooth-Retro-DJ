@@ -31,10 +31,6 @@ function parseSongs(songs) {
 }
 
 function setSong(index) {
-
-    song_analysis = test_analysis;
-	drawVisualizer();
-
 	audioName.innerText = song_list[index].name + " - " + song_list[index].artist;
 	audioLength.innerText = Math.floor(song_list[index].seconds/60) + ":" + (song_list[index].seconds%60);
 }
@@ -47,6 +43,7 @@ function parseSamples(samples) {
 
 const VIS_HEIGHT_F = 0.25;
 function drawVisualizer() {
+	ctx.clearRect(0, 0, audioVisualize.width, audioVisualize.height);
 	let temp;
 	ctx.lineWidth=1;
 	for (let i = 0; i < 150; i++) {
@@ -140,14 +137,4 @@ function setSelectSample(index) {
 		selectSampleDown.style.visibility = "visible";
 	}
 
-}
-
-
-function changeSampleName(name) {
-    sampleName.innerText = name.toUpper();
-}
-
-
-function changeSongName(name) {
-    
 }

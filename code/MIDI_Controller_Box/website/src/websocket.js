@@ -1,6 +1,6 @@
 // global WebSocket pointer
 var webSocket;
-const SEEK_RATE = 2;
+const SEEK_RATE = 1;
 // Used to package values to be sent down to C
 function broadcast(key, ...values) {
     if (isNaN(key )) { return false; }
@@ -51,9 +51,14 @@ function wsOnMessage(event) {
     if (menuMode) {
       if (menuSelected) {
         broadcast(4,song_select);
+        current_song = song_select;
+        setSong(song_select);
       } else {
         broadcast(5,sample_select);
+        current_sample = sample_select;
+        sampleName.innerText = sample_list[current_sample].toUpperCase();
       }
+      hideMenu();
     } else {
 	broadcast(6,0);
     }
@@ -99,4 +104,8 @@ function testWS(i, j) {
 
 function testInit( ){
   webSocket.send('{"type":"0" ,"value":"'+test_songs+'"}');
+}
+
+function testA( ){
+  webSocket.send('{"type":"1" ,"value":"'+test_a+'"}');
 }
