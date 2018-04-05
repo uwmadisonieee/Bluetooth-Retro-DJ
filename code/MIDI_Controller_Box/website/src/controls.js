@@ -22,7 +22,8 @@ function parseSongs(songs) {
         song_list.push({
         	"name" : song_token[3*i],
         	"artist" : song_token[3*i+1],
-        	"seconds" : song_token[3*i+2]
+        	"seconds" : song_token[3*i+2],
+        	"analysis" : new ArrayBuffer(150)
         });
     }
 

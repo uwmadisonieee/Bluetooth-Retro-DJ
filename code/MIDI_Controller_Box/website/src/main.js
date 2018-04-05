@@ -36,8 +36,6 @@ function setWebSocket() {
 function setup() {
     // REMOVE
     screenGoto(1);
-    parseSongs(test_songs);
-    parseSamples(test_samples);
     showMenu();
 
     ctx = audioVisualize.getContext("2d");
