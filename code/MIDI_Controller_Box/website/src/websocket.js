@@ -58,6 +58,8 @@ function wsOnMessage(event) {
       } else {
         broadcast(5,sample_select);
       }
+    } else {
+	broadcast(6,0);
     }
     break;
   case 5: // ROTARY ENCODER
