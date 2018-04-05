@@ -9,6 +9,15 @@
 
 #define LED_COUNT 20
 #define LED_MAX_BRIGHTNESS 31
+#define LED_END_OFF 84
+#define LED_OFFSET 4 // from start frame
+#define LED_DATA_LEN 80
+#define LED_BUF_LEN 88
+
+#define LED_MAX_EFFECTS 10
+int led_effect;
+
+#define LED_CORRECTION 6.21
 
 typedef struct led_frame {
   uint8_t head;
@@ -28,6 +37,10 @@ void LEDSetSide(uint8_t side, led_frame frame);
 void LEDSetSideBrightness(uint8_t side, uint8_t brightness);
 
 void LEDSetAll(led_frame frame);
+
+void LEDSetAllRed(void);
+void LEDSetAllGreen(void);
+void LEDSetAllBlue(void);
 
 void LEDSetAllBrightness(uint8_t brightness);
 

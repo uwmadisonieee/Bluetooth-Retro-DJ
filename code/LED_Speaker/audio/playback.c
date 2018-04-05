@@ -62,6 +62,39 @@ static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
   }
 }
 
+//static led_frame a_frame;
+static void AnalyzeLive(void* buffer_live, int len) {
+  int32_t i;
+  int32_t max = 0;
+  int32_t cur = 0;
+  switch(led_effect) {
+  case 0: // Red Amp
+  case 1: // Green amp
+  case 2: // Blue Amp
+    for (i = 0; i < len; i++) {
+      cur = *((int16_t*)buffer_live + i);
+      if (cur > max) {
+	max = cur;
+      }
+    }
+
+    // only on up amplitude
+    if (max > 1058) {
+      i = max / 1059; // 2^15 / 31 == 1058
+      LEDSetAllBrightness((uint8_t) i);
+      spi_lcd_or_led = 1;
+    }
+    break;
+  case 3: // Snake Amp
+    break;
+  case 4: // 4 Walls
+    break;
+  default:
+    break;
+  }
+
+}
+
 static int current_frame = 0;
 
 static void FramePlay(void* track_buf) {
@@ -77,6 +110,8 @@ static void FramePlay(void* track_buf) {
 
   // wrtie back to a int16_t buffer
   WriteBufS16(buffer_d, buffer_frame, frames);
+
+  AnalyzeLive(buffer_frame, frames);
   
   // play audio
   if ((pcm = snd_pcm_writei(pcm_handle, buffer_frame, frames)) == -EPIPE) {

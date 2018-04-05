@@ -8,6 +8,7 @@
 #include <math.h>
 #include <pthread.h>
 
+#include "../display/led.h"
 #include "tracks.h"
 
 uint8_t playback_play_sample;

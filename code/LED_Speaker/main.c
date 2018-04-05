@@ -64,11 +64,32 @@ void* SPILoop(void* na) {
   }
 }
 
+void buttonISR(void* arg) {
+  led_effect++;
+
+  if (led_effect > LED_MAX_EFFECTS) { led_effect = 0;}
+
+  switch(led_effect) {
+  case 0:
+    LEDSetAllRed();
+    break;
+  case 1:
+    LEDSetAllGreen();
+    break;
+  case 2:
+    LEDSetAllBlue();
+    break;
+  }
+  
+  fprintf(stdout, "pressed : %d\n", led_effect);
+}
 
 int main(int argc, char* argv[]) {
   char debug[256];
   int debugI;
   double debugF;
+  mraa_gpio_context button;
+  int status;
   // need to give data callback
   server_on_data = BlueDataCallback;
 
@@ -76,7 +97,7 @@ int main(int argc, char* argv[]) {
   PlaybackSetup();
   fprintf(stdout, "Playback Setup\n");
 
-/*  spi_lcd_or_led = 0;  SPISetup();
+  SPISetup();
   fprintf(stdout, "SPI (and MRAA) Setup\n");
 
   LEDSetup();
@@ -91,9 +112,25 @@ int main(int argc, char* argv[]) {
   LCDSetup();
   fprintf(stdout, "LCD Setup\n");
 
+  button = mraa_gpio_init(33);
+  if (button == NULL) {
+    fprintf(stderr, "Failed to initialize GPIO %d\n", 33);
+    mraa_deinit();
+    return -1;
+  }
+
+  status = mraa_gpio_dir(button, MRAA_GPIO_IN);
+  if (status != MRAA_SUCCESS) {
+    puts("Status bad for input");
+  }
+
+  status =  mraa_gpio_isr(button, MRAA_GPIO_EDGE_FALLING, &buttonISR, NULL);
+  if (status != MRAA_SUCCESS) {
+    puts("Status bad for isr");
+  }
+  
   spi_lcd_or_led = 0;
   pthread_create(&spi_thread, NULL, SPILoop, NULL);
-*/
   pthread_create(&playback_thread, NULL, TrackPlay, NULL);
 
   // Bluetooth Activate!
