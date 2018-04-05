@@ -13,6 +13,8 @@ static void* buffer_frame;
 static void* buffer_mix;
 static double* buffer_d;
 
+static time_t t_rand;
+
 double playback_gain;
 
 static void WriteBufS16(double *in, void *out, int s)
@@ -62,7 +64,10 @@ static void TrackMix(void* a_buf, void* b_buf, void* m_buf, int length) {
   }
 }
 
-//static led_frame a_frame;
+static uint8_t snake6_count = 0;
+static uint8_t snake6_color = 0;
+static uint8_t wall_c = 0;
+static led_frame a_frame = {0xff, 0x00, 0x00, 0x00};
 static void AnalyzeLive(void* buffer_live, int len) {
   int32_t i;
   int32_t max = 0;
@@ -86,9 +91,95 @@ static void AnalyzeLive(void* buffer_live, int len) {
     }
     break;
   case 3: // Snake Amp
+    for (i = 0; i < len; i++) {
+      cur = *((int16_t*)buffer_live + i);
+      if (cur > max) {
+	max = cur;
+      }
+    }
+    if (max < PLAY_COL_1_8) { LEDSnake(255,0,0); }
+    else if (max < PLAY_COL_2_8) { LEDSnake(200,50,0); }
+    else if (max < PLAY_COL_3_8) { LEDSnake(150,50,50); }
+    else if (max < PLAY_COL_4_8) { LEDSnake(120,120,50); }
+    else if (max < PLAY_COL_5_8) { LEDSnake(50, 150,150); }
+    else if (max < PLAY_COL_6_8) { LEDSnake(70,130,220); }
+    else if (max < PLAY_COL_7_8) { LEDSnake(120,120,255); }
+    else { LEDSnake(200,200,200); }
+      spi_lcd_or_led = 1;
     break;
   case 4: // 4 Walls
+    for (i = 0; i < len; i++) {
+      cur = *((int16_t*)buffer_live + i);
+      if (cur > max) {
+	max = cur;
+      }
+    }
+    if (max < PLAY_COL_1_8) { LEDSetSide(wall_c,255,0,0); }
+    else if (max < PLAY_COL_2_8) { LEDSetSide(wall_c,0,255,0); }
+    else if (max < PLAY_COL_3_8) { LEDSetSide(wall_c,0,0,255); }
+    else if (max < PLAY_COL_4_8) { LEDSetSide(wall_c,200,200,0); }
+    else if (max < PLAY_COL_5_8) { LEDSetSide(wall_c,0, 200,200); }
+    else if (max < PLAY_COL_6_8) { LEDSetSide(wall_c,200,0,200); }
+    else { LEDSetSide(wall_c,200,200,200); }
+    wall_c++;
+    if (wall_c > 3) { wall_c = 0; }
+    spi_lcd_or_led = 1;
     break;
+  case 5: // random
+    for (i = 0; i < len; i++) {
+      cur = *((int16_t*)buffer_live + i);
+      if (cur > max) {
+	max = cur;
+      }
+    }
+
+    // only on up amplitude
+    if (max > 1058) {
+      i = max / 1059; // 2^15 / 31 == 1058
+      cur = rand() % 3;
+      if (cur == 0) {a_frame.red = 255; a_frame.green = 0;a_frame.blue = 0;}
+      if (cur == 1) {a_frame.red = 0; a_frame.green = 255;a_frame.blue = 0;}
+      if (cur == 2) {a_frame.red = 0; a_frame.green = 0;a_frame.blue = 255;}
+      a_frame.head =  0xE0 | (i & 0x1F);
+      LEDSetFrame(rand() % 20, a_frame);
+      LEDSetFrame(rand() % 20, a_frame);
+      LEDSetFrame(rand() % 20, a_frame);
+      spi_lcd_or_led = 1;
+    }
+    
+    break;
+  case 6: // snake but with amp
+    for (i = 0; i < len; i++) {
+      cur = *((int16_t*)buffer_live + i);
+      if (cur > max) {
+	max = cur;
+      }
+    }
+
+    // only on up amplitude
+    if (max > 1058) {
+      i = max / 1059; // 2^15 / 31 == 1058
+
+      if (snake6_color == 0) {a_frame.red = 255; a_frame.green = 0;a_frame.blue = 0;}
+      if (snake6_color == 1) {a_frame.red = 255; a_frame.green = 255;a_frame.blue = 0;}
+      if (snake6_color == 2) {a_frame.red = 0; a_frame.green =255;a_frame.blue = 0;}
+      if (snake6_color == 3) {a_frame.red = 0; a_frame.green = 255;a_frame.blue = 255;}
+      if (snake6_color == 4) {a_frame.red = 0; a_frame.green = 0;a_frame.blue = 255;}
+      a_frame.head = 0xE0 | (i & 0x1F);
+
+      LEDSetFrame(snake6_count, a_frame);
+
+      snake6_count++;
+      if (snake6_count >= 20) {
+	snake6_count = 0;
+	snake6_color++;
+	if (snake6_color >= 5) {
+	  snake6_color = 0;
+	}
+      }
+       spi_lcd_or_led = 1;
+    }
+      break;
   default:
     break;
   }
@@ -322,6 +413,9 @@ void PlaybackSetup() {
   PCMSetup();
   fprintf(stdout, "\tPCMSetup\n");
 
+  /* Intializes random number generator */
+  srand((unsigned) time(&t_rand));
+  
   tracks = malloc(TRACKS_MAX_COUNT * sizeof(track_t));
   samples_x = malloc(SAMPLE_MAX_COUNT * sizeof(sample_t));
   if (tracks == NULL || samples_x == NULL) {

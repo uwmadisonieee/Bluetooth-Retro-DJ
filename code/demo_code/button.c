@@ -8,7 +8,7 @@ static int count = 0;
 static uint64_t epochMilli;
 
 void buttonISR(void* arg) {
-  /*  struct  timespec ts ;
+ struct  timespec ts ;
   uint64_t now;
   
 
@@ -16,11 +16,11 @@ void buttonISR(void* arg) {
   clock_gettime (CLOCK_MONOTONIC_RAW, &ts) ;
   now  = (uint64_t)ts.tv_sec * (uint64_t)1000 + (uint64_t)(ts.tv_nsec / 1000000L) ;
   
-  if( ((uint32_t)(now - epochMilli)) < 1600 ) {
+  if( ((uint32_t)(now - epochMilli)) < 2500 ) {
     puts("DUD");
-    } else {*/
+    } else {
      printf("PRESSED: %d\n", count++); 
-     //}
+    }
 }
 
 int main( ) {

@@ -14,7 +14,7 @@
 #define LED_DATA_LEN 80
 #define LED_BUF_LEN 88
 
-#define LED_MAX_EFFECTS 10
+#define LED_MAX_EFFECTS 6
 int led_effect;
 
 #define LED_CORRECTION 6.21
@@ -32,7 +32,7 @@ void LEDSend(void);
 
 led_frame LEDMakeFrame(uint8_t brightness, uint8_t red, uint8_t green, uint8_t blue);
 
-void LEDSetSide(uint8_t side, led_frame frame);
+void LEDSetSide(uint8_t side, uint8_t red, uint8_t green, uint8_t blue);
 
 void LEDSetSideBrightness(uint8_t side, uint8_t brightness);
 
@@ -42,6 +42,7 @@ void LEDSetAllRed(void);
 void LEDSetAllGreen(void);
 void LEDSetAllBlue(void);
 
+void LEDSnake(uint8_t red, uint8_t green, uint8_t blue);
 void LEDSetAllBrightness(uint8_t brightness);
 
 void LEDSetFrame(uint8_t led, led_frame frame);

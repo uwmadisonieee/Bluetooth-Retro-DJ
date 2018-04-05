@@ -34,8 +34,9 @@ led_frame LEDMakeFrame(uint8_t brightness, uint8_t red, uint8_t green, uint8_t b
   return ret;
 }
 
-void LEDSetSide(uint8_t side, led_frame frame) {
+void LEDSetSide(uint8_t side, uint8_t red, uint8_t green, uint8_t blue) {
   int i;
+  led_frame frame = {0xFA, red, green, blue};
   if (side > 3) { side = 3; }
 
   if (side == 0) {
@@ -87,6 +88,30 @@ void LEDSetAllGreen() {
 }
 void LEDSetAllBlue() {
   LEDSetAll(led_f_blue);
+}
+
+static int snake_count = 0;
+void LEDSnake(uint8_t red, uint8_t green, uint8_t blue) {
+  int i;
+  int brite = 5; // snake brightness gores from 5 - 25
+  led_frame snake_frame = {0xE5, red, green, blue}; 
+  snake_count++;
+  if (snake_count >= LED_COUNT) { snake_count = 0; }
+
+
+  for (i = snake_count; i < LED_COUNT; i++) {
+    snake_frame.head = 0xE0 | ((brite) & 0x1F);
+    memcpy(led_buffer + 4 + (4 * i), &snake_frame, 4);
+    brite++;
+  }
+  for (i = 0; i < snake_count; i++) {
+    snake_frame.head = 0xE0 | ((brite) & 0x1F);
+    memcpy(led_buffer + 4 + (4 * i), &snake_frame, 4);
+    brite++;
+  }
+
+  snake_count++;
+  
 }
 
 void LEDSetAllBrightness(uint8_t brightness) {
