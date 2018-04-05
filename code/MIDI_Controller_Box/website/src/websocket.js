@@ -25,16 +25,36 @@ function wsOnMessage(event) {
       updateSonglist(message.value);
     break;
   case 1:
-      console.log(message.value);
     break;
-  case 2:
+  case 2: // RED BUTTON
     break;
-  case 3:
+  case 3: // GREEN BUTTON
     break;
-  case 4:
+  case 4: // BLUE BUTTON
     break;
-  case 5:
-      break;
+  case 5: // ROTARY ENCODER
+      if (menuMode) {
+        if (menuSelected) {
+          song_select += message.value;          
+          if (song_select < 0) {song_select = 0;}
+          else if (song_select >= song_count) {song_select = song_count-1;}
+          setSelectSong(song_select);
+        } else {
+          samnple_select += message.value;          
+          if (samnple_select < 0) {samnple_select = 0;}
+          else if (samnple_select >= sample_count) {samnple_select = sample_count-1;}
+          setSelectSong(samnple_select);
+        }
+      }
+    break;
+  case 6: // VOLUME SLIDER
+    break; 
+  case 7: // GIF POT
+    break;
+  case 8: //
+    break;
+  case 9:
+    break;
   default:
 	  warn("WebSocket", "No case for data: %0", message);
   }

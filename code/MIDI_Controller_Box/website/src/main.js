@@ -1,8 +1,15 @@
 var screenMode = 0;
+
 var song_list = [];
 var song_count = 0;
+var song_select = 0;
+var sample_list = [];
+var sample_count = 0;
+var sample_select = 0; 
+
 var song_analysis;
 var play_pause = 0; // 1 is play
+var menuSelected = 0; // so it toggles 1 at setup
 var ctx;
 
 // $(document).ready(function() {
@@ -30,10 +37,13 @@ function setup() {
     // REMOVE
     screenGoto(1);
     parseSongs(test_songs);
+    parseSamples(test_samples);
+    showMenu();
 
     ctx = audioVisualize.getContext("2d");
     setSong(0);
     changeGifSpeed(50);
+    toggleMenu();
 }
 
 function updateSonglist(song) {

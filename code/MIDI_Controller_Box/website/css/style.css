@@ -47,8 +47,8 @@ html, body {
 }
 #spinningRecord{
 	position: absolute;
-	left: 50px;
-	top: 20px;
+	left: 30px;
+	top: 35px;
 	max-height: 100px;
 	max-width: 100px;
 	animation: spin 4000ms infinite linear;
@@ -58,9 +58,9 @@ html, body {
 	position: absolute;
 	text-align: center;
 	width: 107px;
-	left: 50px;
-	top: 130px;
-	font-size: 28px;
+	left: 120px;
+	top: 65px;
+	font-size: 32px;
 	color: #ff1f1f;
 }
 @-webkit-keyframes neon1 {
@@ -78,7 +78,7 @@ html, body {
 	left: 225px;
     font-size: 26px;
     font-weight: bold;
-	top: 40px;
+	top: 25px;
 
 }
 #sampleName {	
@@ -86,7 +86,7 @@ html, body {
 	font-size: 34px;
 	position: absolute;	
 	width: 350px;
-	top: 65px;
+	top: 50px;
 	color: #fff;
 	animation: neon1 4.5s ease-in-out infinite alternate;
 }
@@ -96,7 +96,7 @@ html, body {
     width: 600px;
     height: 240px;
     position: absolute;
-    bottom: 80px;
+    bottom: 90px;
     left: 10px;
 
 }
@@ -115,23 +115,24 @@ html, body {
     text-align: center;
     width: 600px;
 	left: 10px;
-	font-size: 40px;
+	font-size: 44px;
 
 	text-decoration: none;
   	transition: all 0.5s;  	
  	color: #228DFF;
   	font-family: Iceland;
+  	font-weight: bold;
   	animation: neon2 1.5s ease-in-out infinite alternate;
 }
 #audioStart{
     position: absolute;
-	font-size: 14px;
+	font-size: 18px;
 	bottom: 79px;
     left: 10px;
 }
 #audioLength{
     position: absolute;
-	font-size: 14px;
+	font-size: 18px;
 	bottom: 79px;
     left: 510px;
     text-align: right;
@@ -139,7 +140,7 @@ html, body {
 }
 #gifSpeed{
 	position: absolute;
-	top: 40px;
+	top: 25px;
 	right: 0px;
     font-size: 22px;
     text-align: center;
@@ -156,7 +157,7 @@ circle {
 }
 #gifWheel{
 	position: absolute;
-	top: 55px;
+	top: 35px;
 	right: 27px;
 	
 }
@@ -170,8 +171,8 @@ circle {
 }
 #volumeSlider{
 	position: absolute;
-	bottom: 100px;
-	right: 85px;
+	bottom: 90px;
+	right: 90px;
 	width: 0px;
 	height: 50px;
 	background-color: #fff;
@@ -185,10 +186,55 @@ circle {
 	right: 0px;
     font-size: 25px;
     text-align: left;
-    width: 160px;
+    width: 168px;
     font-weight: bold;
 }
 #songSelect{
+    font-family: sans-serif;
+	position: absolute;
+    left: -300px;
+	width: 300px;
+	height: 480px;	
+	transition: left 1.2s;
 }
-#fxselect{
+#fxSelect{
+    font-family: sans-serif;
+	position: absolute;
+    right: -300px;
+	width: 300px;
+	height: 480px;	
+	transition: right 1.2s;
+}
+#instructionSelect{
+	position: absolute;
+    bottom: -480px;
+    left: 300px;
+	width: 200px;
+	height: 480px;
+	background-image: url("instructions.png");
+	background-color: rgba(255,255,255,0.85);
+	transition: bottom 1.2s;
+}
+
+.selectHeader{ 
+    text-align: center;
+    font-size: 48px;
+    color: black;
+    font-weight: bold;
+}
+
+.selectItem{
+	color: black;
+	width: 290px;
+	height: 55px;
+	border: 1px white solid;
+	text-align: center;
+	margin-left: 4px;
+	margin-bottom: 10px;
+	font-size: 23px;
+}
+
+.selectDir{
+	height: 30px;	
+	margin-bottom: 3px;
 }
