@@ -20,11 +20,19 @@ function wsOnMessage(event) {
 
   switch(parseInt(message.type)) {
   case 0: // add to song list
-    songList.push(message.value);
-      if (screenMode == 0) { screenGoto(1); }
-      updateSonglist(message.value);
+      var divid = message.value.split("=");
+      parseSongs(divid[0]);
+      parseSamples(divid[1]);
     break;
-  case 1:
+  case 1: // analysis buffers
+    console.log(message);
+    for (let i = 0; i < song_count; i++) {
+      song_list[i].analysis = new ArrayBuffer(150);
+      for (let j=0; j<150; j++) {
+        song_list[i].analysis[j] = message.value.charCodeAt((i*150) + j);
+      }
+    }
+    if (screenMode == 0) { screenGoto(1); } // ready to go
     break;
   case 2: // RED BUTTON
       if (menuMode) {
