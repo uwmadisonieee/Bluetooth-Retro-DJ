@@ -292,7 +292,7 @@ void* TrackPlay(void* na) {
     }
 
     s_frame = 0;
-    
+    playback_play_sample = 0;
     // song ended - default is to start over and pause
     // NOT THREAD SAFE atm if change play_cur_track in this thread
     // TODO -  need way to tell DJ controller
@@ -391,7 +391,7 @@ static int TrackSetup() {
     strcat(full_path, tracks[i].name);
    
     TrackLoad(full_path, &(tracks[i]) );
-    //    TracksAnalysis(&tracks[i]);
+    TracksAnalysis(&tracks[i]);
   }
 
   // SAMPLE SETUP
@@ -421,7 +421,7 @@ void PlaybackSetup() {
   if (tracks == NULL || samples_x == NULL) {
     fprintf(stderr,"ERROR: malloc tracks and samples_x\n");
   }
-
+  
   buffer_size = frames * channels * 2 /* 2 -> sample size */;
   //printf("Frames: %d \tChannels: %d \tbuffer_size: %d\n", frames, channels, buffer_size);
 

@@ -4,6 +4,8 @@ static int socket_fd;
 static int client_fd;
 static char* send_buffer;
 static int connected = 0;
+static void* track_analysis_buffer;
+
 
 static void printFatal(char* message, int id) {
   fprintf(stderr,"\n*************************************\n");
@@ -13,10 +15,17 @@ static void printFatal(char* message, int id) {
 }
 
 static void sendSongData() {
+  int i;
+  
   // Sure hope max buffer is less then string lol #ThugLife
   memset(send_buffer, 0, BLUE_MAX_BUFFER);
   TracksAsString(send_buffer);
   write(client_fd, send_buffer, strlen(send_buffer));
+
+  usleep(100000);
+  
+  i = TracksPackAnalysis(track_analysis_buffer);
+  write(client_fd, send_buffer, i);
 }
 
 static void* serverDaemon() {
@@ -84,6 +93,12 @@ void ServerStart() {
 
   send_buffer = (char*) malloc(BLUE_MAX_BUFFER);
   if (send_buffer == NULL) { printFatal("ERROR: Allocate send_buffer", 0); }
+
+  track_analysis_buffer = malloc(TRACKS_ANALYSIS_SIZE * TRACKS_MAX_COUNT);
+  if (track_analysis_buffer == NULL) {
+    fprintf(stderr,"ERROR: malloc T_A_B\n");
+  }
+
   
   status = pthread_create(&server_thread, NULL, serverDaemon, NULL);
 

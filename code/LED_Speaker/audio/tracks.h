@@ -14,7 +14,7 @@
 #define TRACKS_PATH "./audio/tracks/"
 #define SAMPLES_PATH "./audio/samples/"
 #define TRACKS_RATE 44100
-#define TRACKS_ANALYSIS_SIZE 1024
+#define TRACKS_ANALYSIS_SIZE 150
 
 #define WAV_HEADER_SIZE 44
 
@@ -55,5 +55,7 @@ void TracksAsString(char* buffer);
 int TracksInfo(char* buffer, int index);
 
 void TracksAnalysis(track_t* track);
+
+int TracksPackAnalysis(void* buffer);
 
 #endif

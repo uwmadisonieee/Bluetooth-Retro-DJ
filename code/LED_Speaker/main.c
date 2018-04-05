@@ -16,18 +16,23 @@ void BlueDataCallback( int type, char* value) {
   case 1:
     break;
   case 2: // play/pause
-    //    val = atoi(value);
-    playback_pause ^= 0x01;
+    val = atoi(value);
+    playback_pause = val;
     break;
   case 3: // seek
     val = atoi(value);
     TrackSeek(val);
     break;
-  case 4:
+  case 4: // new track
+    val = atoi(value);
+    TrackChange(val);
     break;
-  case 5:
+  case 5: // new sample
+    val = atoi(value);
+    playback_cur_sample = val;
     break;
-  case 6:
+  case 6: // play sample
+    playback_play_sample = 1;
     break;
   case 7:
     //between 1 - 50

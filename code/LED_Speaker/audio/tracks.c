@@ -178,3 +178,12 @@ void TracksAnalysis(track_t* track) {
     track->analysis[i] = (uint8_t)(max / 128);
   }
 }
+
+int TracksPackAnalysis(void* buffer) {
+  int i = 0;
+  for (i = 0; i < tracks_count; i++) {
+    memcpy(buffer + (i*TRACKS_ANALYSIS_SIZE), &(tracks[i].analysis), TRACKS_ANALYSIS_SIZE);
+  }
+
+  return tracks_count * TRACKS_ANALYSIS_SIZE;
+}
