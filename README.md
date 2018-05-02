@@ -8,7 +8,7 @@ This is a IEEE project designed to grab all the attention at every table event. 
 
 ## How It All Works!
 
-For details on this, check out either the [Medium Article]() on it or feel free to glance around the code.
+For details on this, check out either the [Medium Article](https://medium.com/@spencerfricke/bluetooth-dj-set-diy-embedded-systems-d240a5f08773) on it or feel free to glance around the code.
 
 ## MIDI Controller Box
 
